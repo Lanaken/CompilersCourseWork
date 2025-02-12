@@ -1,0 +1,9 @@
+F {
+    e.x 'A' e.y = e.X e.Y <F e.y><G e.X>;
+    e.z = e.z <G e.z><F e.Z>;
+}
+
+G {
+    e.Z = e.Z;
+    e.Y 'A' e.X = e.Y e.X;
+}

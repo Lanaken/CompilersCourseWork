@@ -1,0 +1,11 @@
+F0 {
+    'A' = "True";
+    'B' e.x  = <H0 e.x>;
+    'C' = "True";
+}
+
+H0 {
+    'A' = "False";
+    'B' e.x  = <H0 e.x>;
+    'C' = ;
+}

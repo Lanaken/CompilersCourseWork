@@ -1,0 +1,278 @@
+
+
+$ENTRY Go {
+ (e.x1) =  <Eq_6 e.x1>;
+}
+
+
+Eq_6 {
+ (x TO empty) e.x1 =  <Eq_0 e.x1>;
+ (z TO empty) e.x1 =  <Eq_5 e.x1>;
+ (z TO x z) e.x1 =  <Eq_6 e.x1>;
+ (x TO z x) (x TO empty) e.x1 =  <Eq_11 e.x1>;
+ (x TO z x) (x TO A x) (x TO empty) e.x1 =  <Eq_15 e.x1>;
+ (x TO z x) (x TO A x) (x TO B x) e.x1 =  <Eq_26 e.x1>;
+ (x TO z x) (x TO A x) e.x1 =  False;
+ (x TO z x) e.x1 =  False;
+ e.x1 =  False;
+}
+
+
+Eq_0 {
+ (y TO empty) e.x1 =  False;
+ (y TO A y) (y TO empty) =  True;
+ (y TO A y) (y TO empty) e.x1 =  False;
+ (y TO A y) (y TO B y) e.x1 =  <Eq_0 e.x1>;
+ (y TO A y) e.x1 =  False;
+ e.x1 =  False;
+}
+
+
+Eq_1 {
+ (y TO empty) e.x1 =  False;
+ (y TO A y) (y TO empty) =  True;
+ (y TO A y) (y TO empty) e.x1 =  False;
+ (y TO A y) (y TO B y) e.x1 =  <Eq_1 e.x1>;
+ (y TO A y) e.x1 =  False;
+ e.x1 =  False;
+}
+
+
+Eq_2 {
+ (y TO empty) =  True;
+ (y TO empty) e.x1 =  False;
+ (y TO B y) e.x1 =  <Eq_2 e.x1>;
+ e.x1 =  False;
+}
+
+
+Eq_3 {
+ (x TO empty) e.x1 =  False;
+ (x TO A x) (x TO empty) =  True;
+ (x TO A x) (x TO empty) e.x1 =  False;
+ (x TO A x) (x TO B x) e.x1 =  <Eq_3 e.x1>;
+ (x TO A x) e.x1 =  False;
+ e.x1 =  False;
+}
+
+
+Eq_4 {
+ (x TO empty) e.x1 =  False;
+ (y TO empty) e.x1 =  <Eq_3 e.x1>;
+ (y TO x y) e.x1 =  <Eq_4 e.x1>;
+ (x TO y x) e.x1 =  <Eq_5 e.x1>;
+ e.x1 =  False;
+}
+
+
+Eq_5 {
+ (x TO empty) e.x1 =  <Eq_1 e.x1>;
+ (x TO A x) (x TO empty) e.x1 =  <Eq_2 e.x1>;
+ (x TO A x) (x TO B x) e.x1 =  <Eq_4 e.x1>;
+ (x TO A x) e.x1 =  False;
+ e.x1 =  False;
+}
+
+
+Eq_7 {
+ (y TO empty) e.x1 =  False;
+ (y TO A y) (y TO empty) =  True;
+ (y TO A y) (y TO empty) e.x1 =  False;
+ (y TO A y) (y TO B y) e.x1 =  <Eq_7 e.x1>;
+ (y TO A y) e.x1 =  False;
+ e.x1 =  False;
+}
+
+
+Eq_8 {
+ (y TO empty) =  True;
+ (y TO empty) e.x1 =  False;
+ (y TO B y) e.x1 =  <Eq_8 e.x1>;
+ e.x1 =  False;
+}
+
+
+Eq_9 {
+ (z TO empty) e.x1 =  False;
+ (z TO A z) (z TO empty) =  True;
+ (z TO A z) (z TO empty) e.x1 =  False;
+ (z TO A z) (z TO B z) e.x1 =  <Eq_9 e.x1>;
+ (z TO A z) e.x1 =  False;
+ e.x1 =  False;
+}
+
+
+Eq_10 {
+ (z TO empty) e.x1 =  False;
+ (y TO empty) e.x1 =  <Eq_9 e.x1>;
+ (y TO z y) e.x1 =  <Eq_10 e.x1>;
+ (z TO y z) e.x1 =  <Eq_11 e.x1>;
+ e.x1 =  False;
+}
+
+
+Eq_11 {
+ (z TO empty) e.x1 =  <Eq_7 e.x1>;
+ (z TO A z) (z TO empty) e.x1 =  <Eq_8 e.x1>;
+ (z TO A z) (z TO B z) e.x1 =  <Eq_10 e.x1>;
+ (z TO A z) e.x1 =  False;
+ e.x1 =  False;
+}
+
+
+Eq_12 {
+ (y TO empty) =  True;
+ (y TO empty) e.x1 =  False;
+ (y TO B y) e.x1 =  <Eq_12 e.x1>;
+ e.x1 =  False;
+}
+
+
+Eq_13 {
+ (z TO empty) =  True;
+ (z TO empty) e.x1 =  False;
+ (z TO B z) e.x1 =  <Eq_13 e.x1>;
+ e.x1 =  False;
+}
+
+
+Eq_14 {
+ (z TO empty) =  True;
+ (z TO empty) e.x1 =  False;
+ (y TO empty) e.x1 =  <Eq_13 e.x1>;
+ (y TO z y) e.x1 =  <Eq_14 e.x1>;
+ (z TO y z) e.x1 =  <Eq_15 e.x1>;
+ e.x1 =  False;
+}
+
+
+Eq_15 {
+ (z TO empty) e.x1 =  <Eq_12 e.x1>;
+ (z TO B z) e.x1 =  <Eq_14 e.x1>;
+ e.x1 =  False;
+}
+
+
+Eq_16 {
+ (z TO empty) e.x1 =  False;
+ (y TO empty) e.x1 =  False;
+ (y TO z y) e.x1 =  <Eq_16 e.x1>;
+ (z TO y z) e.x1 =  <Eq_16 e.x1>;
+ e.x1 =  False;
+}
+
+
+Eq_17 {
+ (x TO empty) e.x1 =  False;
+ (x TO A x) (x TO empty) =  True;
+ (x TO A x) (x TO empty) e.x1 =  False;
+ (x TO A x) (x TO B x) e.x1 =  <Eq_17 e.x1>;
+ (x TO A x) e.x1 =  False;
+ e.x1 =  False;
+}
+
+
+Eq_18 {
+ (x TO empty) e.x1 =  False;
+ (z TO empty) e.x1 =  <Eq_17 e.x1>;
+ (z TO x z) e.x1 =  <Eq_18 e.x1>;
+ (x TO z x) (x TO empty) e.x1 =  <Eq_19 e.x1>;
+ (x TO z x) (x TO A x) (x TO empty) e.x1 =  <Eq_20 e.x1>;
+ (x TO z x) (x TO A x) (x TO B x) e.x1 =  <Eq_18 e.x1>;
+ (x TO z x) (x TO A x) e.x1 =  False;
+ (x TO z x) e.x1 =  False;
+ e.x1 =  False;
+}
+
+
+Eq_19 {
+ (z TO empty) e.x1 =  False;
+ (z TO A z) (z TO empty) =  True;
+ (z TO A z) (z TO empty) e.x1 =  False;
+ (z TO A z) (z TO B z) e.x1 =  <Eq_19 e.x1>;
+ (z TO A z) e.x1 =  False;
+ e.x1 =  False;
+}
+
+
+Eq_20 {
+ (z TO empty) =  True;
+ (z TO empty) e.x1 =  False;
+ (z TO B z) e.x1 =  <Eq_20 e.x1>;
+ e.x1 =  False;
+}
+
+
+Eq_21 {
+ (x TO empty) e.x1 =  False;
+ (x TO A x) (x TO empty) =  True;
+ (x TO A x) (x TO empty) e.x1 =  False;
+ (x TO A x) (x TO B x) e.x1 =  <Eq_21 e.x1>;
+ (x TO A x) e.x1 =  False;
+ e.x1 =  False;
+}
+
+
+Eq_22 {
+ (x TO empty) e.x1 =  False;
+ (y TO empty) e.x1 =  <Eq_21 e.x1>;
+ (y TO x y) e.x1 =  <Eq_22 e.x1>;
+ (x TO y x) (x TO empty) e.x1 =  <Eq_23 e.x1>;
+ (x TO y x) (x TO A x) (x TO empty) e.x1 =  <Eq_24 e.x1>;
+ (x TO y x) (x TO A x) (x TO B x) e.x1 =  <Eq_22 e.x1>;
+ (x TO y x) (x TO A x) e.x1 =  False;
+ (x TO y x) e.x1 =  False;
+ e.x1 =  False;
+}
+
+
+Eq_23 {
+ (y TO empty) e.x1 =  False;
+ (y TO A y) (y TO empty) =  True;
+ (y TO A y) (y TO empty) e.x1 =  False;
+ (y TO A y) (y TO B y) e.x1 =  <Eq_23 e.x1>;
+ (y TO A y) e.x1 =  False;
+ e.x1 =  False;
+}
+
+
+Eq_24 {
+ (y TO empty) =  True;
+ (y TO empty) e.x1 =  False;
+ (y TO B y) e.x1 =  <Eq_24 e.x1>;
+ e.x1 =  False;
+}
+
+
+Eq_25 {
+ (x TO empty) e.x1 =  False;
+ (x TO A x) (x TO empty) =  True;
+ (x TO A x) (x TO empty) e.x1 =  False;
+ (x TO A x) (x TO B x) e.x1 =  <Eq_25 e.x1>;
+ (x TO A x) e.x1 =  False;
+ e.x1 =  False;
+}
+
+
+Eq_26 {
+ (x TO empty) e.x1 =  <Eq_16 e.x1>;
+ (y TO empty) e.x1 =  <Eq_18 e.x1>;
+ (y TO x y) e.x1 =  <Eq_27 e.x1>;
+ (x TO y x) e.x1 =  <Eq_6 e.x1>;
+ e.x1 =  False;
+}
+
+
+Eq_27 {
+ (z TO empty) e.x1 =  <Eq_22 e.x1>;
+ (y TO empty) e.x1 =  <Eq_25 e.x1>;
+ (y TO z y) e.x1 =  <Eq_26 e.x1>;
+ (z TO y z) e.x1 =  <Eq_27 e.x1>;
+ e.x1 =  False;
+}
+
+/* This file was generated by MSCP at Thu Dec 28 02:21:53 2023.*/
+
+/* Elapsed time of embeddings is 8.99.*/
+
+/* Elapsed time of generalizations is 0.2.*/

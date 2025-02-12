@@ -1,0 +1,9 @@
+Check {
+  'x' 'y' 'z' = <Check2 'xyz'>;
+  'hello' = "world";
+}
+
+Check2 {
+  'xyz' = "xyz";
+  'hello' = "world";
+}

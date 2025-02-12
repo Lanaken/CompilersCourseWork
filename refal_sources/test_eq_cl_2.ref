@@ -1,0 +1,17 @@
+F {
+    'B' e.x = <F e.X>;
+    'A' e.X2 = <G e.X2>;
+    e.Z e.Z1 'C' e.Z = e.Z;
+}
+
+G {
+    'A' e.X = <F e.X>;
+    'B' e.X11 = <H e.X11>;
+    e.5 e.Q 'C' e.5 = e.5;
+}
+
+H {
+    'A' e.W = <H e.W>;
+    'B' e.U = <G e.U>;
+    e.V e.S 'C' e.V = e.V;
+}

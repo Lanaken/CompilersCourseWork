@@ -1,0 +1,4 @@
+Check {
+  'xyz' = "xyz";
+  'hello' = "world";
+}
