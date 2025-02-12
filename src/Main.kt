@@ -1,7 +1,7 @@
 import java.io.File
 
 fun main() {
-    val inputDirPath = "refal_sources_1"
+    val inputDirPath = "refal_sources"
     val outputDirPath = "refal_output"
     val astDirPath = "refal_ast"
     val dedupedDirPath = "refal_deduped"
