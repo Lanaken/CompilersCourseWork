@@ -1,5 +1,7 @@
-import TokenType.ENTRY
-import TokenType.EXTERN
+package main.kotlin
+
+import main.kotlin.TokenType.ENTRY
+import main.kotlin.TokenType.EXTERN
 
 //Program → ProgramElement Program | ε
 //

@@ -1,3 +1,6 @@
+import main.kotlin.Parser
+
+
 object FunctionNormalizer {
     fun normalize(program: Parser.Program): Parser.Program {
         val normalizedElements = program.elements.map { element ->
@@ -44,6 +47,32 @@ object FunctionNormalizer {
             is Parser.ResultElement.ParenStructure ->
                 Parser.ResultElement.ParenStructure(element.elements.map { normalizeResultElement(it) })
             else -> element
+        }
+    }
+
+    // 🔹 **НОВОЕ:** Нормализуем вызовы функций в графе вызовов
+    fun normalizeCallGraph(
+        callGraph: Map<String, MutableSet<Pair<String, List<Parser.ResultElement>>>>
+    ): Map<String, MutableSet<Pair<String, List<Parser.ResultElement>>>> {
+        return callGraph.mapValues { (_, calls) ->
+            calls.map { (func, args) ->
+                Pair(func, args.map { normalizeResultElement(it) })
+            }.toMutableSet()
+        }
+    }
+
+    // 🔹 **НОВОЕ:** Нормализуем вызывающие функции (callers)
+    fun normalizeCallers(
+        callers: Map<String, MutableSet<String>>
+    ): Map<String, MutableSet<String>> {
+        return callers.mapValues { (_, callingFunctions) -> callingFunctions.toMutableSet() }
+    }
+
+    // 🔹 **НОВОЕ:** Нормализуем аргументы вызовов функций
+    fun normalizeFunctionCalls(body: List<Parser.Sentence>): List<Parser.Sentence> {
+        return body.map { sentence ->
+            val normalizedElements = sentence.result.elements.map { normalizeResultElement(it) }
+            sentence.copy(result = Parser.Result(normalizedElements))
         }
     }
 

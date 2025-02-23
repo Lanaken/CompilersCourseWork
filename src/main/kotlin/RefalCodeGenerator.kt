@@ -1,5 +1,6 @@
-import TokenType.ENTRY
-import TokenType.EXTERN
+import main.kotlin.Parser
+import main.kotlin.TokenType.ENTRY
+import main.kotlin.TokenType.EXTERN
 
 object RefalCodeGenerator {
     fun generate(program: Parser.Program): String {

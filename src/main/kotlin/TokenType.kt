@@ -1,3 +1,5 @@
+package main.kotlin
+
 object TokenType {
     const val ENTRY = "ENTRY"
     const val GO = "GO"

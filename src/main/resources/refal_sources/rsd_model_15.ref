@@ -1,0 +1,287 @@
+
+
+$ENTRY Go {
+ (e.x1) (e.x2) e.x3 =  <InputFormat_0 (e.x2) (e.x3) (e.x1)>;
+}
+
+
+InputFormat_0 {
+ ('ba' e.x1) (e.x2) (e.x3) =  <LogAnd_28 (e.x1) (e.x2) (e.x3) ()>;
+ ('b' e.x1) (e.x2) (e.x3) =  False;
+ (e.x1) (e.x2) (e.x3) =  False;
+}
+
+
+LogAnd_0 {
+ ('b' e.x1) (e.x2) (e.x3) (e.x4) =  <LogAnd_1 (e.x1) (e.x2) (e.x3) () (e.x4)>;
+ (e.x1) (e.x2) (e.x3) (e.x4) =  False;
+}
+
+
+LogAnd_1 {
+ (e.x1) ('a' e.x2) (e.x3) (e.x4) (e.x5) =  <LogAnd_0 (e.x1) (e.x2) (e.x3 'b' e.x4) (e.x5 e.x4 'a')>;
+ (s.z1 e.x1) (s.z1 e.x2) (e.x3) (e.x4) (e.x5) =  <LogAnd_1 (e.x1) (e.x2) (e.x3) (e.x4 s.z1) (e.x5)>;
+ (e.x1) (s.z1 e.x2) (e.x3) (e.x4) (e.x5) =  False;
+ () () (e.x1) (e.x2) ('ac' e.x3) =  <LogAnd_2 (e.x1) (e.x2) (e.x3)>;
+ () () (e.x1) ('c' e.x2) ('a') =  <LogAnd_13 (e.x1) (e.x2) (e.x2)>;
+ () () (e.x1) (e.x2) ('b' e.x3) =  <LogAnd_15 (e.x1) (e.x2) (e.x3)>;
+ () () (e.x1) (e.x2) (s.z1 e.x3) =  False;
+ () () (e.x1) ('b' e.x2) () =  <LogAnd_26 (e.x1) (e.x2) (e.x2)>;
+ () () (e.x1) (s.z1 e.x2) () =  False;
+ () () (e.x1) (e.x2) (e.x3) =  False;
+ (e.x1) (e.x2) (e.x3) (e.x4) (e.x5) =  False;
+}
+
+
+LogAnd_2 {
+ ('b' e.x1) (e.x2) ('ac' e.x3) =  <LogAnd_2 (e.x1) (e.x2) (e.x3)>;
+ () (e.x1) ('ac' e.x2) =  <LogAnd_3 (e.x1) (e.x2)>;
+ (e.x1) (e.x2) ('ac' e.x3) =  False;
+ ('b' e.x1) ('c' e.x2) ('a') =  <LogAnd_5 (e.x1) (e.x2) (e.x2)>;
+ () ('c' e.x1) ('a') =  <LogAnd_7 e.x1>;
+ (e.x1) ('c' e.x2) ('a') =  False;
+ (s.z1 e.x1) (e.x2) (s.z1 e.x3) =  <LogAnd_2 (e.x1) (e.x2) (e.x3)>;
+ () (e.x1) ('b' e.x2) =  <LogAnd_8 (e.x1) (e.x2)>;
+ (e.x1) (e.x2) (s.z1 e.x3) =  False;
+ (e.x1) (s.z1 e.x2) () =  <LogAnd_10 (e.x1) () s.z1 (e.x2)>;
+ (e.x1) (e.x2) (e.x3) =  False;
+}
+
+
+LogAnd_3 {
+ ('b' e.x1) ('ac' e.x2) =  <LogAnd_3 (e.x1) (e.x2 'b')>;
+ (e.x1) ('ac' e.x2) =  False;
+ ('c' e.x1) ('a') =  False;
+ (s.z1 e.x1) (s.z1 e.x2) =  <LogAnd_3 (e.x1) (e.x2 s.z1)>;
+ (e.x1) (s.z1 e.x2) =  False;
+ (s.z1 e.x1) () =  <LogAnd_4 s.z1 (e.x1)>;
+ () () =  True;
+ (e.x1) (e.x2) =  False;
+}
+
+
+LogAnd_4 {
+ s.z1 (s.z2 e.x1) =  <LogAnd_4 s.z2 (e.x1)>;
+ s.z1 () =  True;
+ s.z1 (e.x1) =  False;
+}
+
+
+LogAnd_5 {
+ (s.z1 e.x1) (e.x2) (s.z1 e.x3) =  <LogAnd_5 (e.x1) (e.x2) (e.x3)>;
+ () (e.x1) ('bc' e.x2) =  <LogAnd_6 (e.x1) (e.x2)>;
+ () (e.x1) ('b' s.z1 e.x2) =  False;
+ () (e.x1) ('b' e.x2) =  False;
+ (e.x1) (e.x2) (s.z1 e.x3) =  False;
+ (e.x1) (e.x2) (e.x3) =  False;
+}
+
+
+LogAnd_6 {
+ (s.z1 e.x1) (s.z1 e.x2) =  <LogAnd_6 (e.x1) (e.x2)>;
+ (e.x1) (s.z1 e.x2) =  False;
+ () () =  True;
+ (e.x1) (e.x2) =  False;
+}
+
+
+LogAnd_7 {
+ 'c' e.x1 =  <LogAnd_7 e.x1>;
+ s.z1 e.x1 =  False;
+ e.x1 =  False;
+}
+
+
+LogAnd_8 {
+ ('b' e.x1) ('ac' e.x2) =  <LogAnd_8 (e.x1) (e.x2 'b')>;
+ (e.x1) ('ac' e.x2) =  False;
+ ('c' e.x1) ('a') =  False;
+ (s.z1 e.x1) (s.z1 e.x2) =  <LogAnd_8 (e.x1) (e.x2 s.z1)>;
+ (e.x1) (s.z1 e.x2) =  False;
+ (s.z1 e.x1) () =  <LogAnd_9 s.z1 (e.x1)>;
+ () () =  True;
+ (e.x1) (e.x2) =  False;
+}
+
+
+LogAnd_9 {
+ s.z1 (s.z2 e.x1) =  <LogAnd_9 s.z2 (e.x1)>;
+ s.z1 () =  True;
+ s.z1 (e.x1) =  False;
+}
+
+
+LogAnd_10 {
+ (s.z1 e.x1) (e.x2) s.z1 (s.z2 e.x3) =  <LogAnd_10 (e.x1) (e.x2 s.z1) s.z2 (e.x3)>;
+ (s.z1 e.x1) (e.x2) s.z1 (e.x3) =  False;
+ () (e.x1) 'b' (e.x2) =  <LogAnd_11 (e.x1) (e.x2) (e.x2)>;
+ (e.x1) (e.x2) s.z1 (e.x3) =  False;
+}
+
+
+LogAnd_11 {
+ (s.z1 e.x1) (e.x2) (s.z1 e.x3) =  <LogAnd_11 (e.x1) (e.x2) (e.x3)>;
+ () (e.x1) ('b' e.x2) =  <LogAnd_12 (e.x1) (e.x2)>;
+ (e.x1) (e.x2) (s.z1 e.x3) =  False;
+ (e.x1) (e.x2) (e.x3) =  False;
+}
+
+
+LogAnd_12 {
+ (s.z1 e.x1) (s.z1 e.x2) =  <LogAnd_12 (e.x1) (e.x2)>;
+ (e.x1) (s.z1 e.x2) =  False;
+ () () =  True;
+ (e.x1) (e.x2) =  False;
+}
+
+
+LogAnd_13 {
+ (s.z1 e.x1) (e.x2) (s.z1 e.x3) =  <LogAnd_13 (e.x1) (e.x2) (e.x3)>;
+ () (e.x1) ('bc' e.x2) =  <LogAnd_14 (e.x1) (e.x2)>;
+ () (e.x1) ('b' s.z1 e.x2) =  False;
+ () (e.x1) ('b' e.x2) =  False;
+ (e.x1) (e.x2) (s.z1 e.x3) =  False;
+ (e.x1) (e.x2) (e.x3) =  False;
+}
+
+
+LogAnd_14 {
+ (s.z1 e.x1) (s.z1 e.x2) =  <LogAnd_14 (e.x1) (e.x2)>;
+ (e.x1) (s.z1 e.x2) =  False;
+ () () =  True;
+ (e.x1) (e.x2) =  False;
+}
+
+
+LogAnd_15 {
+ ('b' e.x1) (e.x2) ('ac' e.x3) =  <LogAnd_15 (e.x1) (e.x2) (e.x3)>;
+ () (e.x1) ('ac' e.x2) =  <LogAnd_16 (e.x1) (e.x2)>;
+ (e.x1) (e.x2) ('ac' e.x3) =  False;
+ ('b' e.x1) ('c' e.x2) ('a') =  <LogAnd_18 (e.x1) (e.x2) (e.x2)>;
+ () ('c' e.x1) ('a') =  <LogAnd_20 e.x1>;
+ (e.x1) ('c' e.x2) ('a') =  False;
+ (s.z1 e.x1) (e.x2) (s.z1 e.x3) =  <LogAnd_15 (e.x1) (e.x2) (e.x3)>;
+ () (e.x1) ('b' e.x2) =  <LogAnd_21 (e.x1) (e.x2)>;
+ (e.x1) (e.x2) (s.z1 e.x3) =  False;
+ (e.x1) (s.z1 e.x2) () =  <LogAnd_23 (e.x1) () s.z1 (e.x2)>;
+ (e.x1) (e.x2) (e.x3) =  False;
+}
+
+
+LogAnd_16 {
+ ('b' e.x1) ('ac' e.x2) =  <LogAnd_16 (e.x1) (e.x2 'b')>;
+ (e.x1) ('ac' e.x2) =  False;
+ ('c' e.x1) ('a') =  False;
+ (s.z1 e.x1) (s.z1 e.x2) =  <LogAnd_16 (e.x1) (e.x2 s.z1)>;
+ (e.x1) (s.z1 e.x2) =  False;
+ (s.z1 e.x1) () =  <LogAnd_17 s.z1 (e.x1)>;
+ () () =  True;
+ (e.x1) (e.x2) =  False;
+}
+
+
+LogAnd_17 {
+ s.z1 (s.z2 e.x1) =  <LogAnd_17 s.z2 (e.x1)>;
+ s.z1 () =  True;
+ s.z1 (e.x1) =  False;
+}
+
+
+LogAnd_18 {
+ (s.z1 e.x1) (e.x2) (s.z1 e.x3) =  <LogAnd_18 (e.x1) (e.x2) (e.x3)>;
+ () (e.x1) ('bc' e.x2) =  <LogAnd_19 (e.x1) (e.x2)>;
+ () (e.x1) ('b' s.z1 e.x2) =  False;
+ () (e.x1) ('b' e.x2) =  False;
+ (e.x1) (e.x2) (s.z1 e.x3) =  False;
+ (e.x1) (e.x2) (e.x3) =  False;
+}
+
+
+LogAnd_19 {
+ (s.z1 e.x1) (s.z1 e.x2) =  <LogAnd_19 (e.x1) (e.x2)>;
+ (e.x1) (s.z1 e.x2) =  False;
+ () () =  True;
+ (e.x1) (e.x2) =  False;
+}
+
+
+LogAnd_20 {
+ 'c' e.x1 =  <LogAnd_20 e.x1>;
+ s.z1 e.x1 =  False;
+ e.x1 =  False;
+}
+
+
+LogAnd_21 {
+ ('b' e.x1) ('ac' e.x2) =  <LogAnd_21 (e.x1) (e.x2 'b')>;
+ (e.x1) ('ac' e.x2) =  False;
+ ('c' e.x1) ('a') =  False;
+ (s.z1 e.x1) (s.z1 e.x2) =  <LogAnd_21 (e.x1) (e.x2 s.z1)>;
+ (e.x1) (s.z1 e.x2) =  False;
+ (s.z1 e.x1) () =  <LogAnd_22 s.z1 (e.x1)>;
+ () () =  True;
+ (e.x1) (e.x2) =  False;
+}
+
+
+LogAnd_22 {
+ s.z1 (s.z2 e.x1) =  <LogAnd_22 s.z2 (e.x1)>;
+ s.z1 () =  True;
+ s.z1 (e.x1) =  False;
+}
+
+
+LogAnd_23 {
+ (s.z1 e.x1) (e.x2) s.z1 (s.z2 e.x3) =  <LogAnd_23 (e.x1) (e.x2 s.z1) s.z2 (e.x3)>;
+ (s.z1 e.x1) (e.x2) s.z1 (e.x3) =  False;
+ () (e.x1) 'b' (e.x2) =  <LogAnd_24 (e.x1) (e.x2) (e.x2)>;
+ (e.x1) (e.x2) s.z1 (e.x3) =  False;
+}
+
+
+LogAnd_24 {
+ (s.z1 e.x1) (e.x2) (s.z1 e.x3) =  <LogAnd_24 (e.x1) (e.x2) (e.x3)>;
+ () (e.x1) ('b' e.x2) =  <LogAnd_25 (e.x1) (e.x2)>;
+ (e.x1) (e.x2) (s.z1 e.x3) =  False;
+ (e.x1) (e.x2) (e.x3) =  False;
+}
+
+
+LogAnd_25 {
+ (s.z1 e.x1) (s.z1 e.x2) =  <LogAnd_25 (e.x1) (e.x2)>;
+ (e.x1) (s.z1 e.x2) =  False;
+ () () =  True;
+ (e.x1) (e.x2) =  False;
+}
+
+
+LogAnd_26 {
+ (s.z1 e.x1) (e.x2) (s.z1 e.x3) =  <LogAnd_26 (e.x1) (e.x2) (e.x3)>;
+ () (e.x1) ('bb' e.x2) =  <LogAnd_27 (e.x1) (e.x2)>;
+ () (e.x1) ('b' s.z1 e.x2) =  False;
+ () (e.x1) ('b' e.x2) =  False;
+ (e.x1) (e.x2) (s.z1 e.x3) =  False;
+ (e.x1) (e.x2) (e.x3) =  False;
+}
+
+
+LogAnd_27 {
+ (s.z1 e.x1) (s.z1 e.x2) =  <LogAnd_27 (e.x1) (e.x2)>;
+ (e.x1) (s.z1 e.x2) =  False;
+ () () =  True;
+ (e.x1) (e.x2) =  False;
+}
+
+
+LogAnd_28 {
+ () () ('b' e.x1) (e.x2) =  <LogAnd_0 (e.x1) (e.x2) () ()>;
+ () () (e.x1) (e.x2) =  False;
+ (s.z1 e.x1) (s.z1 e.x2) (e.x3) (e.x4) =  <LogAnd_28 (e.x1) (e.x2) (e.x3) (e.x4 s.z1)>;
+ (e.x1) (e.x2) (e.x3) (e.x4) =  False;
+}
+
+/* This file was generated by MSCP at Thu Apr 20 22:13:35 2023.*/
+
+/* Elapsed time of embeddings is 0.148.*/
+
+/* Elapsed time of generalizations is 0.913.*/

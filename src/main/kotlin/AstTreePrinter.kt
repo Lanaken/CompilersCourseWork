@@ -1,3 +1,5 @@
+package main.kotlin
+
 object AstTreePrinter {
 
     fun printAst(program: Parser.Program, indent: String = ""): String {

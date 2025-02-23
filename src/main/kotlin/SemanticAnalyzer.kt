@@ -1,0 +1,67 @@
+import main.kotlin.Parser.*
+
+/**
+ * Этот класс выполняет семантический анализ функции:
+ * для каждого предложения (rule) проверяет, что все переменные,
+ * объявленные в левой части (pattern), присутствуют в правой части (result).
+ * Если в правой части появляется переменная, которая не была объявлена в левой,
+ * это считается ошибкой.
+ */
+class SemanticAnalyzer {
+
+    /**
+     * Анализирует семантику программы.
+     *
+     * @param program AST программы
+     * @return список сообщений об ошибках, если найдены предложения,
+     *         где в правой части встречается переменная, отсутствующая в паттерне.
+     */
+    fun analyze(program: Program): List<String> {
+        val errors = mutableListOf<String>()
+        for (element in program.elements) {
+            if (element is ProgramElement.FunctionDefinition) {
+                for ((index, sentence) in element.body.withIndex()) {
+                    val patternVars = getPatternVariables(sentence.pattern)
+                    val resultVars = getResultVariables(sentence.result)
+                    // Если в правой части есть переменная, которой нет в левой, то это ошибка.
+                    for (varName in resultVars) {
+                        if (!patternVars.contains(varName)) {
+                            errors.add(
+                                "В функции '${element.name}', правило #${index + 1}: " +
+                                        "переменная '$varName' присутствует в результате, но не объявлена в паттерне."
+                            )
+                        }
+                    }
+                }
+            }
+        }
+        return errors
+    }
+
+    private fun getPatternVariables(pattern: Pattern): Set<String> {
+        val vars = mutableSetOf<String>()
+        for (element in pattern.elements) {
+            when (element) {
+                is PatternElement.Variable -> vars.add("${element.type}.${element.name}")
+                is PatternElement.ParenStructure -> vars.addAll(getPatternVariables(Pattern(element.elements)))
+                // Остальные элементы не содержат переменных.
+                else -> {}
+            }
+        }
+        return vars
+    }
+
+    // Собираем все переменные, встречающиеся в результате (рекурсивно).
+    private fun getResultVariables(result: Result): Set<String> {
+        val vars = mutableSetOf<String>()
+        for (element in result.elements) {
+            when (element) {
+                is ResultElement.Variable -> vars.add("${element.type}.${element.name}")
+                is ResultElement.ParenStructure -> vars.addAll(getResultVariables(Result(element.elements)))
+                is ResultElement.AngleStructure -> vars.addAll(getResultVariables(Result(element.elements)))
+                else -> {} // Литералы, числа, символы
+            }
+        }
+        return vars
+    }
+}

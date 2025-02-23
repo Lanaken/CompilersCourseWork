@@ -1,0 +1,9 @@
+F0 {
+    'A' e.X = <H0 e.X>;
+    'A' e.X t.X = 'ABC';
+}
+
+F {
+    'A' e.X t.X = 'ABC';
+    'A' e.X = <H e.X>;
+}
