@@ -1,4 +1,12 @@
-import main.kotlin.Parser.*
+import Parser.Pattern
+import Parser.PatternElement.PatternParenStructure
+import Parser.PatternElement.PatternVariable
+import Parser.Program
+import Parser.ProgramElement
+import Parser.Result
+import Parser.ResultElement.ResultAngleStructure
+import Parser.ResultElement.ResultParenStructure
+import Parser.ResultElement.ResultVariable
 
 /**
  * Этот класс выполняет семантический анализ функции:
@@ -42,8 +50,8 @@ class SemanticAnalyzer {
         val vars = mutableSetOf<String>()
         for (element in pattern.elements) {
             when (element) {
-                is PatternElement.Variable -> vars.add("${element.type}.${element.name}")
-                is PatternElement.ParenStructure -> vars.addAll(getPatternVariables(Pattern(element.elements)))
+                is PatternVariable -> vars.add("${element.type}.${element.name}")
+                is PatternParenStructure -> vars.addAll(getPatternVariables(Pattern(element.elements)))
                 // Остальные элементы не содержат переменных.
                 else -> {}
             }
@@ -56,9 +64,9 @@ class SemanticAnalyzer {
         val vars = mutableSetOf<String>()
         for (element in result.elements) {
             when (element) {
-                is ResultElement.Variable -> vars.add("${element.type}.${element.name}")
-                is ResultElement.ParenStructure -> vars.addAll(getResultVariables(Result(element.elements)))
-                is ResultElement.AngleStructure -> vars.addAll(getResultVariables(Result(element.elements)))
+                is ResultVariable -> vars.add("${element.type}.${element.name}")
+                is ResultParenStructure -> vars.addAll(getResultVariables(Result(element.elements)))
+                is ResultAngleStructure -> vars.addAll(getResultVariables(Result(element.elements)))
                 else -> {} // Литералы, числа, символы
             }
         }

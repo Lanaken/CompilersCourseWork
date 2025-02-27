@@ -1,5 +1,3 @@
-import main.kotlin.Parser
-
 class FunctionEquivalenceChecker {
     private val patternComparator = PatternComparator()
     private val resultComparator = ResultComparator()
@@ -49,7 +47,7 @@ class FunctionEquivalenceChecker {
         val unmatched = body2.toMutableList()
         for (s1 in body1) {
             var match: Parser.Sentence? = null
-            unmatched.forEach { s2 ->
+            for (s2 in unmatched) {
                 val forwardMap: MutableMap<Pair<String, String>, String> = mutableMapOf()
                 val reverseMap: MutableMap<Pair<String, String>, String> = mutableMapOf()
 
@@ -59,18 +57,18 @@ class FunctionEquivalenceChecker {
 
                     if (areResultsEquvalient) {
                         match = s2
-                        return@forEach
+                        break
                     }
                 } else {
 
                     val arePatternsEquivalent = patternComparator.areEquivalent(s1.pattern, s2.pattern, forwardMap, reverseMap)
                     if (arePatternsEquivalent && areResultsEquvalient) {
                         match = s2
-                        return@forEach
+                        break
                     }
 
                     val arePatternsIntersect = patternIntersectionChecker.hasIntersection(s1.pattern, s2.pattern)
-                    if (arePatternsIntersect && !areResultsEquvalient)
+                    if (arePatternsIntersect)
                         return false
                 }
             }

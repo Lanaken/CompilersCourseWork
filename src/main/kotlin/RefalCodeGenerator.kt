@@ -1,6 +1,14 @@
-import main.kotlin.Parser
 import main.kotlin.TokenType.ENTRY
 import main.kotlin.TokenType.EXTERN
+import Parser.Pattern
+import Parser.PatternElement
+import Parser.PatternElement.PatternLiteral
+import Parser.PatternElement.PatternNumber
+import Parser.PatternElement.PatternParenStructure
+import Parser.PatternElement.PatternStringVal
+import Parser.PatternElement.PatternSymbol
+import Parser.PatternElement.PatternVariable
+import Parser.ResultElement.*
 
 object RefalCodeGenerator {
     fun generate(program: Parser.Program): String {
@@ -35,16 +43,16 @@ object RefalCodeGenerator {
         return builder.toString()
     }
 
-    private fun generatePattern(pattern: Parser.Pattern): String  = pattern.elements.joinToString(" ") { generatePatternElement(it) }
+    private fun generatePattern(pattern: Pattern): String  = pattern.elements.joinToString(" ") { generatePatternElement(it) }
 
-    private fun generatePatternElement(element: Parser.PatternElement): String {
+    private fun generatePatternElement(element: PatternElement): String {
         return when (element) {
-            is Parser.PatternElement.Variable -> element.name
-            is Parser.PatternElement.Literal -> element.value
-            is Parser.PatternElement.ParenStructure -> "(${element.elements.joinToString(" ") { generatePatternElement(it) }})"
-            is Parser.PatternElement.Symbol -> element.text
-            is Parser.PatternElement.Number -> element.value.toString()
-            is Parser.PatternElement.StringVal -> element.value
+            is PatternVariable -> element.name
+            is PatternLiteral -> element.value
+            is PatternParenStructure -> "(${element.elements.joinToString(" ") { generatePatternElement(it) }})"
+            is PatternSymbol -> element.text
+            is PatternNumber -> element.value.toString()
+            is PatternStringVal -> element.value
         }
     }
 
@@ -53,13 +61,13 @@ object RefalCodeGenerator {
 
     private fun generateResultElement(element: Parser.ResultElement): String {
         return when (element) {
-            is Parser.ResultElement.Variable -> element.name
-            is Parser.ResultElement.Literal -> element.value
-            is Parser.ResultElement.AngleStructure -> "<${element.constructor} ${element.elements.joinToString(" ") { generateResultElement(it) }}>"
-            is Parser.ResultElement.ParenStructure -> "(${element.elements.joinToString(" ") { generateResultElement(it) }})"
-            is Parser.ResultElement.Symbol -> element.text
-            is Parser.ResultElement.Number -> element.value.toString()
-            is Parser.ResultElement.StringVal -> element.value
+            is ResultVariable -> element.name
+            is ResultLiteral -> element.value
+            is ResultAngleStructure -> "<${element.constructor} ${element.elements.joinToString(" ") { generateResultElement(it) }}>"
+            is ResultParenStructure -> "(${element.elements.joinToString(" ") { generateResultElement(it) }})"
+            is ResultSymbol -> element.text
+            is ResultNumber -> element.value.toString()
+            is ResultStringVal -> element.value
         }
     }
 }

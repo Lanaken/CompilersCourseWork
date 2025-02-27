@@ -1,5 +1,3 @@
-import main.kotlin.Parser
-
 class FunctionEquivalenceGrouper(
     private val equivalenceChecker: FunctionEquivalenceChecker = FunctionEquivalenceChecker()
 ) {

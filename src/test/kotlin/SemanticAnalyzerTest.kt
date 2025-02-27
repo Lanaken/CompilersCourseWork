@@ -1,7 +1,7 @@
-import main.kotlin.Parser.*
+import Parser.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import main.kotlin.Parser.ProgramElement.FunctionDefinition
+import Parser.ProgramElement.FunctionDefinition
 
 class SemanticAnalyzerTest {
 
@@ -14,14 +14,14 @@ class SemanticAnalyzerTest {
         // Результат: (e.x, 'A')
         val pattern = Pattern(
             listOf(
-                PatternElement.Variable("e", "x"),
-                PatternElement.Literal("A")
+                PatternElement.PatternVariable("e", "x"),
+                PatternElement.PatternLiteral("A")
             )
         )
         val result = Result(
             listOf(
-                ResultElement.Variable("e", "x"),
-                ResultElement.Literal("A")
+                ResultElement.ResultVariable("e", "x"),
+                ResultElement.ResultLiteral("A")
             )
         )
         val sentence = Sentence(pattern, result)
@@ -40,13 +40,13 @@ class SemanticAnalyzerTest {
         // Результат: ('A', e.x)
         val pattern = Pattern(
             listOf(
-                PatternElement.Literal("A")
+                PatternElement.PatternLiteral("A")
             )
         )
         val result = Result(
             listOf(
-                ResultElement.Literal("A"),
-                ResultElement.Variable("e", "x")
+                ResultElement.ResultLiteral("A"),
+                ResultElement.ResultVariable("e", "x")
             )
         )
         val sentence = Sentence(pattern, result)
@@ -66,24 +66,24 @@ class SemanticAnalyzerTest {
         // Результат: ((e.x, 'B'), 'C')
         val pattern = Pattern(
             listOf(
-                PatternElement.ParenStructure(
+                PatternElement.PatternParenStructure(
                     listOf(
-                        PatternElement.Variable("e", "x"),
-                        PatternElement.Literal("B")
+                        PatternElement.PatternVariable("e", "x"),
+                        PatternElement.PatternLiteral("B")
                     )
                 ),
-                PatternElement.Literal("C")
+                PatternElement.PatternLiteral("C")
             )
         )
         val result = Result(
             listOf(
-                ResultElement.ParenStructure(
+                ResultElement.ResultParenStructure(
                     listOf(
-                        ResultElement.Variable("e", "x"),
-                        ResultElement.Literal("B")
+                        ResultElement.ResultVariable("e", "x"),
+                        ResultElement.ResultLiteral("B")
                     )
                 ),
-                ResultElement.Literal("C")
+                ResultElement.ResultLiteral("C")
             )
         )
         val sentence = Sentence(pattern, result)
@@ -102,23 +102,23 @@ class SemanticAnalyzerTest {
         // Результат: ((e.x, 'B'), 'C') – переменная e.x отсутствует во вложенной структуре
         val pattern = Pattern(
             listOf(
-                PatternElement.ParenStructure(
+                PatternElement.PatternParenStructure(
                     listOf(
-                        PatternElement.Literal("B")
+                        PatternElement.PatternLiteral("B")
                     )
                 ),
-                PatternElement.Literal("C")
+                PatternElement.PatternLiteral("C")
             )
         )
         val result = Result(
             listOf(
-                ResultElement.ParenStructure(
+                ResultElement.ResultParenStructure(
                     listOf(
-                        ResultElement.Variable("e", "x"),
-                        ResultElement.Literal("B")
+                        ResultElement.ResultVariable("e", "x"),
+                        ResultElement.ResultLiteral("B")
                     )
                 ),
-                ResultElement.Literal("C")
+                ResultElement.ResultLiteral("C")
             )
         )
         val sentence = Sentence(pattern, result)
@@ -137,27 +137,27 @@ class SemanticAnalyzerTest {
         // Предложение 2: Паттерн: ('B') → Результат: (e.y 'B') (ошибка, e.y отсутствует)
         val pattern1 = Pattern(
             listOf(
-                PatternElement.Variable("e", "x"),
-                PatternElement.Literal("A")
+                PatternElement.PatternVariable("e", "x"),
+                PatternElement.PatternLiteral("A")
             )
         )
         val result1 = Result(
             listOf(
-                ResultElement.Variable("e", "x"),
-                ResultElement.Literal("A")
+                ResultElement.ResultVariable("e", "x"),
+                ResultElement.ResultLiteral("A")
             )
         )
         val sentence1 = Sentence(pattern1, result1)
 
         val pattern2 = Pattern(
             listOf(
-                PatternElement.Literal("B")
+                PatternElement.PatternLiteral("B")
             )
         )
         val result2 = Result(
             listOf(
-                ResultElement.Variable("e", "y"),
-                ResultElement.Literal("B")
+                ResultElement.ResultVariable("e", "y"),
+                ResultElement.ResultLiteral("B")
             )
         )
         val sentence2 = Sentence(pattern2, result2)

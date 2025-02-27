@@ -1,8 +1,7 @@
 import java.io.File
 import java.nio.file.Paths
-import main.kotlin.AstTreePrinter
 import main.kotlin.Lexer
-import main.kotlin.Parser
+
 
 class RefalCodeProcessor {
     fun process() {

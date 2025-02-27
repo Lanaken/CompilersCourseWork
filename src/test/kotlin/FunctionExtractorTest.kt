@@ -1,9 +1,9 @@
-import main.kotlin.Parser.*
-import main.kotlin.Parser.PatternElement.*
-import main.kotlin.Parser.ResultElement.*
+import Parser.*
+import Parser.PatternElement.*
+import Parser.ResultElement.*
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import main.kotlin.Parser.PatternElement.Literal as PatternLiteral
+import Parser.PatternElement.PatternLiteral as PatternLiteral
 
 class FunctionExtractorTest {
 
@@ -16,7 +16,7 @@ class FunctionExtractorTest {
             body = listOf(
                 Sentence(
                     pattern = Pattern(listOf(PatternLiteral("A"))),
-                    result = Result(listOf(Literal("B")))
+                    result = Result(listOf(ResultLiteral("B")))
                 )
             )
         )
@@ -45,7 +45,7 @@ class FunctionExtractorTest {
                     pattern = Pattern(listOf(PatternLiteral("A"))),
                     result = Result(
                         listOf(
-                            AngleStructure("G", listOf(Literal("B")))
+                            ResultAngleStructure("G", listOf(ResultLiteral("B")))
                         )
                     )
                 )
@@ -58,7 +58,7 @@ class FunctionExtractorTest {
             body = listOf(
                 Sentence(
                     pattern = Pattern(listOf(PatternLiteral("C"))),
-                    result = Result(listOf(Literal("D")))
+                    result = Result(listOf(ResultLiteral("D")))
                 )
             )
         )
@@ -80,7 +80,7 @@ class FunctionExtractorTest {
         assertEquals(1, args.size)
         val arg0 = args[0]
         // Ожидаем, что аргумент – литерал "B"
-        assertTrue(arg0 is Literal && (arg0 as Literal).value == "B")
+        assertTrue(arg0 is ResultLiteral && (arg0 as ResultLiteral).value == "B")
 
         // Проверяем callers: функция G должна вызываться функцией F.
         val callersG = functionInfo.callers["G"]
@@ -102,10 +102,10 @@ class FunctionExtractorTest {
                     pattern = Pattern(listOf(PatternLiteral("A"))),
                     result = Result(
                         listOf(
-                            AngleStructure("G", listOf(
-                                ResultElement.ParenStructure(
+                            ResultAngleStructure("G", listOf(
+                                ResultElement.ResultParenStructure(
                                     listOf(
-                                        AngleStructure("H", listOf(Literal("X")))
+                                        ResultAngleStructure("H", listOf(ResultLiteral("X")))
                                     )
                                 )
                             ))
@@ -121,7 +121,7 @@ class FunctionExtractorTest {
             body = listOf(
                 Sentence(
                     pattern = Pattern(listOf(PatternLiteral("B"))),
-                    result = Result(listOf(Literal("C")))
+                    result = Result(listOf(ResultLiteral("C")))
                 )
             )
         )
@@ -132,7 +132,7 @@ class FunctionExtractorTest {
             body = listOf(
                 Sentence(
                     pattern = Pattern(listOf(PatternLiteral("D"))),
-                    result = Result(listOf(Literal("E")))
+                    result = Result(listOf(ResultLiteral("E")))
                 )
             )
         )

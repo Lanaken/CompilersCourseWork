@@ -1,96 +1,348 @@
-import main.kotlin.Parser
+import Parser.Pattern
+import Parser.PatternElement
+import Parser.PatternElement.PatternLiteral
+import Parser.PatternElement.PatternNumber
+import Parser.PatternElement.PatternParenStructure
+import Parser.PatternElement.PatternVariable
+import Parser.PatternElement.*
 
 class PatternIntersectionChecker {
-    /**
-     * Проверяет, существует ли непустое пересечение, задаваемых паттернами p1 и p2.
-     */
-    fun hasIntersection(
-        p1: Parser.Pattern,
-        p2: Parser.Pattern
-    ): Boolean {
-        // Запускаем рекурсивный процесс с начальной подстановкой (пустой) и без остатка.
-        return checkIntersection(p1.elements, p2.elements, mutableMapOf(), mutableMapOf())
+
+    private val listOfSimpleTypes = listOf(
+        PatternSymbol::class.java,
+        PatternVariable::class.java,
+        PatternLiteral::class.java,
+        PatternNumber::class.java
+    )
+
+    fun hasIntersection(p1: Pattern, p2: Pattern): Boolean {
+        val substs = Substitution()
+        return intersect(p1.elements, p2.elements, substs)
     }
 
     /**
-     * Рекурсивная функция для проверки пересечения двух последовательностей элементов паттернов.
-     * @param elems1 оставшиеся элементы из первого паттерна
-     * @param elems2 оставшиеся элементы из второго паттерна
-     * @param forwardMap карта сопоставлений переменных из первого паттерна ко второму
-     * @param reverseMap обратная карта сопоставлений
-     * @return true, если существует способ сопоставления оставшихся элементов, иначе false.
+     * Рекурсивно сопоставляем списки elems1 и elems2.
+     * substs хранит подстановки для e/t/s‑переменных.
      */
-    private fun checkIntersection(
-        elems1: List<Parser.PatternElement>,
-        elems2: List<Parser.PatternElement>,
-        forwardMap: MutableMap<Pair<String, String>, String>,
-        reverseMap: MutableMap<Pair<String, String>, String>
+    private fun intersect(
+        elems1: List<PatternElement>,
+        elems2: List<PatternElement>,
+        substs: Substitution
     ): Boolean {
+
         if (elems1.isEmpty() && elems2.isEmpty()) return true
+        if (elems1.isEmpty()) return canEsSwallow(elems2, substs)
+        if (elems2.isEmpty()) return canEsSwallow(elems1, substs)
 
-        // Если один из списков пуст, необходимо проверить, могут ли оставшиеся переменные быть сопоставлены с пустотой.
-        if (elems1.isEmpty() || elems2.isEmpty()) {
-            // Например, если остаются только e‑переменные, допускающие пустое значение.
-            return canMatchEmpty(elems1) && canMatchEmpty(elems2)
+        val head1 = elems1.first()
+        val head2 = elems2.first()
+
+        if (!isEVar(head1) && !isEVar(head2) &&
+            !isTVar(head1) && !isTVar(head2)
+        ) {
+            return matchOneElement(head1, head2, substs) &&
+                    intersect(elems1.drop(1), elems2.drop(1), substs)
         }
 
-        val first1 = elems1.first()
-        val first2 = elems2.first()
-
-        // Попробуем сопоставить первый элемент каждого списка.
-        return when {
-            first1 is Parser.PatternElement.Literal && first2 is Parser.PatternElement.Literal ->
-                if (first1.value == first2.value)
-                    checkIntersection(elems1.drop(1), elems2.drop(1), forwardMap, reverseMap)
-                else
-                    false
-            first1 is Parser.PatternElement.Variable && first2 !is Parser.PatternElement.Variable ->
-                // Если один элемент – переменная, а другой – конкретное значение,
-                // то переменная может сопоставиться с этим значением, если тип позволяет.
-                checkIntersection(elems1.drop(1), elems2.drop(1), forwardMap, reverseMap)
-            first1 !is Parser.PatternElement.Variable && first2 is Parser.PatternElement.Variable ->
-                checkIntersection(elems1.drop(1), elems2.drop(1), forwardMap, reverseMap)
-            first1 is Parser.PatternElement.Variable && first2 is Parser.PatternElement.Variable ->
-                // Если оба элемента – переменные, то допускаем сопоставление, если они одного типа.
-                if (first1.type == first2.type) {
-                    // Устанавливаем сопоставление, если ещё не установлено.
-                    val key1 = Pair(first1.type, first1.name)
-                    val key2 = Pair(first2.type, first2.name)
-                    if (!forwardMap.containsKey(key1) && !reverseMap.containsKey(key2)) {
-                        forwardMap[key1] = first2.name
-                        reverseMap[key2] = first1.name
-                    }
-                    checkIntersection(elems1.drop(1), elems2.drop(1), forwardMap, reverseMap)
-                } else {
-                    false
+        if (isEVar(head1)) {
+            val eVar = head1 as PatternVariable
+            val oldBinding = substs.eBindings[eVar]
+            if (oldBinding != null) {
+                if (!prefixMatches(oldBinding, elems2, substs)) {
+                    return false
                 }
-            first1 is Parser.PatternElement.ParenStructure && first2 is Parser.PatternElement.ParenStructure ->
-                // Рекурсивно сравниваем содержимое скобок
-                if (checkIntersection(first1.elements, first2.elements, mutableMapOf(), mutableMapOf()))
-                    checkIntersection(elems1.drop(1), elems2.drop(1), forwardMap, reverseMap)
-                else
-                    false
-            else ->
-                // Для прочих случаев (например, символы) сравниваем на равенство.
-                if (first1 is Parser.PatternElement.Symbol && first2 is Parser.PatternElement.Symbol &&
-                    first1.text == first2.text
-                )
-                    checkIntersection(elems1.drop(1), elems2.drop(1), forwardMap, reverseMap)
-                else
-                    false
+                val k = oldBinding.size
+                return intersect(elems1.drop(1), elems2.drop(k), substs)
+            } else {
+                for (k in 0..elems2.size) {
+                    val newSubsts = substs.deepCopy()
+
+                    newSubsts.eBindings[eVar] = elems2.take(k)
+
+                    if (intersect(elems1.drop(1), elems2.drop(k), newSubsts)) {
+                        return true
+                    }
+
+                }
+                return false
+            }
+        }
+
+
+        if (isEVar(head2)) {
+            val eVar = head2 as PatternVariable
+            val oldBinding = substs.eBindings[eVar]
+            if (oldBinding != null) {
+                if (!prefixMatches(oldBinding, elems1, substs)) {
+                    return false
+                }
+                val k = oldBinding.size
+                return intersect(elems1.drop(k), elems2.drop(1), substs)
+            } else {
+                for (k in 0..elems1.size) {
+                    val segment = elems1.take(k)
+                    substs.eBindings[eVar] = segment
+                    if (intersect(elems1.drop(k), elems2.drop(1), substs)) {
+                        return true
+                    }
+                    substs.eBindings.remove(eVar)
+                }
+                return false
+            }
+        }
+
+        if (isTVar(head1)) {
+            val tVar = head1 as PatternVariable
+            val oldBinding = substs.tBindings[tVar]
+            if (oldBinding != null) {
+
+                if (!prefixMatches(oldBinding, elems2, substs)) {
+                    return false
+                }
+                val k = oldBinding.size
+                return intersect(elems1.drop(1), elems2.drop(k), substs)
+            } else {
+
+                val oneTerm = takeOneTerm(elems2)
+                    ?: return false
+                substs.tBindings[tVar] = oneTerm.term
+
+                if (intersect(elems1.drop(1), elems2.drop(oneTerm.length), substs))
+                    return true
+
+                substs.tBindings.remove(tVar)
+                return false
+            }
+        }
+
+        if (isTVar(head2)) {
+            val tVar = head2 as PatternVariable
+            val oldBinding = substs.tBindings[tVar]
+            if (oldBinding != null) {
+                if (!prefixMatches(oldBinding, elems1, substs)) {
+                    return false
+                }
+                val k = oldBinding.size
+                return intersect(elems1.drop(k), elems2.drop(1), substs)
+            } else {
+                for (k in 1..elems1.size) {
+                    val segment = elems1.take(k)
+                    substs.tBindings[tVar] = segment
+                    if (intersect(elems1.drop(k), elems2.drop(1), substs)) {
+                        return true
+                    }
+                    substs.tBindings.remove(tVar)
+                }
+                return false
+            }
+        }
+
+        return false
+    }
+
+    private fun matchOneElement(
+        elem1: PatternElement,
+        elem2: PatternElement,
+        substs: Substitution
+    ): Boolean {
+        if (elem1 is PatternLiteral && elem2 is PatternLiteral) {
+            return elem1.value == elem2.value
+        }
+
+        if (elem1 is PatternNumber && elem2 is PatternNumber) {
+            return elem1.value == elem2.value
+        }
+
+        if (elem1 is PatternStringVal && elem2 is PatternStringVal)
+            return elem1.value == elem2.value
+
+        if (elem1 is PatternSymbol && elem2 is PatternSymbol)
+            return elem1 == elem2
+
+        if (isSVar(elem1) && (elem2.javaClass in listOfSimpleTypes)) {
+            return unifySVarWithAtom(elem1 as PatternVariable, elem2, substs)
+        }
+
+        if (isSVar(elem2) && (elem1.javaClass in listOfSimpleTypes)) {
+            return unifySVarWithAtom(elem2 as PatternVariable, elem1, substs)
+        }
+
+        if (isSVar(elem1) && isSVar(elem2)) {
+            return unifyVarVar(elem1 as PatternVariable, elem2 as PatternVariable, substs, substs.sBindings)
+        }
+
+        if (elem1 is PatternParenStructure && elem2 is PatternParenStructure) {
+            return intersect(elem1.elements, elem2.elements, substs)
+        }
+
+        return false
+    }
+
+    private fun unifyVarVar(
+        v1: PatternVariable,
+        v2: PatternVariable,
+        substs: Substitution,
+        map: MutableMap<PatternVariable, List<PatternElement>>
+    ): Boolean {
+        val old1 = map[v1]
+        val old2 = map[v2]
+
+        if (old1 == null && old2 == null) {
+            map[v1] = listOf(v2)
+            map[v2] = listOf(v1)
+            return true
+        }
+
+        if (old1 != null && old2 == null) {
+            if (old1.size == 1 && old1[0] is PatternVariable) {
+                val subVar = old1[0] as PatternVariable
+                return unifyVarVar(subVar, v2, substs, map)
+            } else if (old1.size == 1) {
+                val single = old1[0]
+                val old2Binding = map[v2]
+                if (old2Binding == null) {
+                    map[v2] = listOf(single)
+                    return true
+                } else if (old2Binding.size == 1) {
+                    val single2 = old2Binding[0]
+                    return singleEquivalentToAtom(single, single2)
+                } else {
+                    return false
+                }
+            }
+            return false
+        }
+
+        if (old1 == null && old2 != null) {
+            if (old2.size == 1 && old2[0] is PatternVariable) {
+                val subVar = old2[0] as PatternVariable
+                return unifyVarVar(v1, subVar, substs, map)
+            } else if (old2.size == 1) {
+                val single2 = old2[0]
+                val old1Binding = map[v1]
+                if (old1Binding == null) {
+                    map[v1] = listOf(single2)
+                    return true
+                } else if (old1Binding.size == 1) {
+                    return singleEquivalentToAtom(old1Binding[0], single2)
+                } else {
+                    return false
+                }
+            }
+            return false
+        }
+
+        if (old1 != null && old2 != null) {
+            if (old1.size == 1 && old1[0] is PatternVariable) {
+                val v1sub = old1[0] as PatternVariable
+                return unifyVarVar(v1sub, v2, substs, map)
+            }
+
+            if (old2.size == 1 && old2[0] is PatternVariable) {
+                val v2sub = old2[0] as PatternVariable
+                return unifyVarVar(v1, v2sub, substs, map)
+            }
+
+            if (old1.size == 1 && old2.size == 1) {
+                return singleEquivalentToAtom(old1[0], old2[0])
+            }
+            return false
+        }
+
+        return false
+    }
+
+
+
+    private fun unifySVarWithAtom(
+        sVar: PatternVariable,
+        atom: PatternElement,
+        substs: Substitution
+    ): Boolean {
+        val old = substs.sBindings[sVar]
+        if (old != null) {
+            if (old.size != 1) return false
+            val single = old[0]
+            return singleEquivalentToAtom(single, atom)
+        } else {
+            substs.sBindings[sVar] = listOf(atom)
+            return true
         }
     }
 
-    /**
-     * Проверяет, могут ли все элементы списка быть сопоставлены с пустой последовательностью.
-     * Обычно это true для e‑переменных, а для s‑или t‑переменных – false.
-     */
-    private fun canMatchEmpty(elems: List<Parser.PatternElement>): Boolean {
-        return elems.all { elem ->
-            when (elem) {
-                is Parser.PatternElement.Variable -> elem.type == "e" // только e‑переменные допускают пустое соответствие
-                else -> false
+    private fun singleEquivalentToAtom(a: PatternElement, b: PatternElement): Boolean {
+        if (a is PatternLiteral && b is PatternLiteral) return a.value == b.value
+        if (a is PatternNumber && b is PatternNumber) return a.value == b.value
+        if (a is PatternStringVal && b is PatternStringVal) return a.value == b.value
+        if (a is PatternSymbol && b is PatternSymbol) return a.text == b.text
+        return false
+    }
+
+
+    private fun canEsSwallow(
+        elems: List<PatternElement>,
+        substs: Substitution
+    ): Boolean {
+        for (e in elems) {
+            if (!isEVar(e)) return false
+            val eVar = e as PatternVariable
+            val bound = substs.eBindings[eVar]
+            if (bound.isNullOrEmpty()) {
+                substs.eBindings[eVar] = emptyList()
+            } else {
+                if (bound.isNotEmpty()) return false
+            }
+        }
+        return true
+    }
+
+    private fun prefixMatches(
+        segment: List<PatternElement>,
+        elems: List<PatternElement>,
+        substs: Substitution
+    ): Boolean {
+        if (segment.size > elems.size) return false
+        for (i in segment.indices) {
+            if (!matchOneElement(segment[i], elems[i], substs)) {
+                return false
+            }
+        }
+        return true
+    }
+
+    private fun takeOneTerm(elems: List<PatternElement>): OneTermResult? {
+        if (elems.isEmpty()) return null
+        val first = elems[0]
+
+        return when (first) {
+            is PatternLiteral, is PatternNumber -> {
+                OneTermResult(listOf(first), 1)
+            }
+
+            is PatternParenStructure -> {
+                OneTermResult(listOf(first), 1)
+            }
+
+            else -> {
+                null
             }
         }
     }
+
+    private fun isEVar(e: PatternElement): Boolean {
+        return e is PatternVariable && e.type == "e"
+    }
+
+    private fun isTVar(e: PatternElement): Boolean {
+        return e is PatternVariable && e.type == "t"
+    }
+
+    private fun isSVar(e: PatternElement): Boolean {
+        return e is PatternVariable && e.type == "s"
+    }
+
+    private data class OneTermResult(
+        val term: List<PatternElement>,
+        val length: Int
+    )
 }

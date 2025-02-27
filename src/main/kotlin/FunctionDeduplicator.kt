@@ -1,9 +1,5 @@
-import main.kotlin.Parser
-
-
 class FunctionDeduplicator(
     private val grouper: FunctionEquivalenceGrouper = FunctionEquivalenceGrouper(),
-    private val equivalenceChecker: FunctionEquivalenceChecker = FunctionEquivalenceChecker()
 ) {
     /**
      * Удаляет дублирующие функции из AST.
@@ -44,12 +40,12 @@ class FunctionDeduplicator(
     ): Parser.Result {
         val newElements = result.elements.map { re ->
             when (re) {
-                is Parser.ResultElement.AngleStructure -> {
+                is Parser.ResultElement.ResultAngleStructure -> {
                     val newConstructor = replacementMap[re.constructor] ?: re.constructor
                     val newElements = replaceCallsInResult(Parser.Result(re.elements), replacementMap).elements
                     re.copy(constructor = newConstructor, elements = newElements)
                 }
-                is Parser.ResultElement.ParenStructure -> {
+                is Parser.ResultElement.ResultParenStructure -> {
                     val newElements = replaceCallsInResult(Parser.Result(re.elements), replacementMap).elements
                     re.copy(elements = newElements)
                 }

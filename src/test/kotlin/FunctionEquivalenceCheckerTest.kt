@@ -1,8 +1,8 @@
-import main.kotlin.Parser.*
-import main.kotlin.Parser.PatternElement.*
-import main.kotlin.Parser.ResultElement.*
-import main.kotlin.Parser.ResultElement.Literal as ResultLiteral
-import main.kotlin.Parser.ResultElement.Variable as ResultVariable
+import Parser.*
+import Parser.PatternElement.*
+import Parser.ResultElement.*
+import Parser.ResultElement.ResultLiteral as ResultLiteral
+import Parser.ResultElement.ResultVariable as ResultVariable
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
@@ -18,15 +18,15 @@ class FunctionEquivalenceCheckerTest {
         // Sentence 3: Pattern: (e.Z e.Z1 'C' e.Z) → Result: (e.Z)
         val fSentences = listOf(
             Sentence(
-                Pattern(listOf(Literal("B"), Variable("e", "x"))),
-                Result(listOf(AngleStructure("F", listOf(ResultVariable("e", "x")))))
+                Pattern(listOf(PatternLiteral("B"), PatternVariable("e", "x"))),
+                Result(listOf(ResultAngleStructure("F", listOf(ResultVariable("e", "x")))))
             ),
             Sentence(
-                Pattern(listOf(Literal("A"), Variable("e", "X2"))),
-                Result(listOf(AngleStructure("G", listOf(ResultVariable("e", "X2")))))
+                Pattern(listOf(PatternLiteral("A"), PatternVariable("e", "X2"))),
+                Result(listOf(ResultAngleStructure("G", listOf(ResultVariable("e", "X2")))))
             ),
             Sentence(
-                Pattern(listOf(Variable("e", "Z"), Variable("e", "Z1"), Literal("C"), Variable("e", "Z"))),
+                Pattern(listOf(PatternVariable("e", "Z"), PatternVariable("e", "Z1"), PatternLiteral("C"), PatternVariable("e", "Z"))),
                 Result(listOf(ResultVariable("e", "Z")))
             )
         )
@@ -38,15 +38,15 @@ class FunctionEquivalenceCheckerTest {
         // Sentence 3: Pattern: (e.5 e.Q 'C' e.5) → Result: (e.5)
         val gSentences = listOf(
             Sentence(
-                Pattern(listOf(Literal("A"), Variable("e", "X"))),
-                Result(listOf(AngleStructure("F", listOf(ResultVariable("e", "X")))))
+                Pattern(listOf(PatternLiteral("A"), PatternVariable("e", "X"))),
+                Result(listOf(ResultAngleStructure("F", listOf(ResultVariable("e", "X")))))
             ),
             Sentence(
-                Pattern(listOf(Literal("B"), Variable("e", "X11"))),
-                Result(listOf(AngleStructure("H", listOf(ResultVariable("e", "X11")))))
+                Pattern(listOf(PatternLiteral("B"), PatternVariable("e", "X11"))),
+                Result(listOf(ResultAngleStructure("H", listOf(ResultVariable("e", "X11")))))
             ),
             Sentence(
-                Pattern(listOf(Variable("e", "5"), Variable("e", "Q"), Literal("C"), Variable("e", "5"))),
+                Pattern(listOf(PatternVariable("e", "5"), PatternVariable("e", "Q"), PatternLiteral("C"), PatternVariable("e", "5"))),
                 Result(listOf(ResultVariable("e", "5")))
             )
         )
@@ -65,17 +65,17 @@ class FunctionEquivalenceCheckerTest {
     fun `functions with different number of sentences are not equivalent`() {
         val fSentences = listOf(
             Sentence(
-                Pattern(listOf(Literal("A"), Variable("e", "x"))),
+                Pattern(listOf(PatternLiteral("A"), PatternVariable("e", "x"))),
                 Result(listOf(ResultVariable("e", "x")))
             )
         )
         val gSentences = listOf(
             Sentence(
-                Pattern(listOf(Literal("A"), Variable("e", "x"))),
+                Pattern(listOf(PatternLiteral("A"), PatternVariable("e", "x"))),
                 Result(listOf(ResultVariable("e", "x")))
             ),
             Sentence(
-                Pattern(listOf(Literal("B"))),
+                Pattern(listOf(PatternLiteral("B"))),
                 Result(listOf(ResultLiteral("B")))
             )
         )

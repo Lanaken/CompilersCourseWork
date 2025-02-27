@@ -1,5 +1,7 @@
-package main.kotlin
 
+import main.kotlin.SyntaxError
+import main.kotlin.Token
+import main.kotlin.TokenType
 import main.kotlin.TokenType.ENTRY
 import main.kotlin.TokenType.EXTERN
 
@@ -52,25 +54,25 @@ class Parser(private val tokens: List<Token>) {
     data class Result(val elements: List<ResultElement>)
 
     sealed class PatternElement {
-        data class Variable(val type: String, val name: String) : PatternElement()
-        data class Literal(val value: String) : PatternElement()
-        data class ParenStructure(val elements: List<PatternElement>) : PatternElement()
-        data class Number(val value: Int) : PatternElement()
-        data class StringVal(val value: String): PatternElement()
+        data class PatternVariable(val type: String, val name: String) : PatternElement()
+        data class PatternLiteral(val value: String) : PatternElement()
+        data class PatternParenStructure(val elements: List<PatternElement>) : PatternElement()
+        data class PatternNumber(val value: Int) : PatternElement()
+        data class PatternStringVal(val value: String): PatternElement()
 
-        data class Symbol(val text: String) : PatternElement()
+        data class PatternSymbol(val text: String) : PatternElement()
     }
 
     sealed class ResultElement {
-        data class Variable(val type: String, val name: String) : ResultElement()
-        data class Literal(val value: String) : ResultElement()
-        data class AngleStructure(val constructor: String, val elements: List<ResultElement>) : ResultElement()
-        data class ParenStructure(val elements: List<ResultElement>) : ResultElement()
-        data class Number(val value: Int) : ResultElement()
-        data class StringVal(val value: String): ResultElement()
+        data class ResultVariable(val type: String, val name: String) : ResultElement()
+        data class ResultLiteral(val value: String) : ResultElement()
+        data class ResultAngleStructure(val constructor: String, val elements: List<ResultElement>) : ResultElement()
+        data class ResultParenStructure(val elements: List<ResultElement>) : ResultElement()
+        data class ResultNumber(val value: Int) : ResultElement()
+        data class ResultStringVal(val value: String): ResultElement()
 
 
-        data class Symbol(val text: String) : ResultElement()
+        data class ResultSymbol(val text: String) : ResultElement()
     }
 
     fun parse(): Program {
@@ -162,28 +164,28 @@ class Parser(private val tokens: List<Token>) {
         skipWhitespaceAndComments()
 
         if (match(TokenType.COMMA)) {
-            return PatternElement.Symbol(",")
+            return PatternElement.PatternSymbol(",")
         }
         if (match(TokenType.COLON)) {
-            return PatternElement.Symbol(":")
+            return PatternElement.PatternSymbol(":")
         }
 
         return when {
             match(TokenType.S_VAR, TokenType.T_VAR, TokenType.E_VAR) -> {
                 val tk = previous()
-                PatternElement.Variable(tk.type, tk.value)
+                PatternElement.PatternVariable(tk.type, tk.value)
             }
             match(TokenType.LITERAL) -> {
                 val tk = previous()
-                PatternElement.Literal(tk.value)
+                PatternElement.PatternLiteral(tk.value)
             }
             match(TokenType.NUMBER) -> {
                 val tk = previous()
-                PatternElement.Number(tk.value.toInt())
+                PatternElement.PatternNumber(tk.value.toInt())
             }
             match(TokenType.NAME, TokenType.STRING) -> {
                 val tk = previous()
-                PatternElement.StringVal(tk.value)
+                PatternElement.PatternStringVal(tk.value)
             }
             match(TokenType.LPAREN) -> {
                 val subs = mutableListOf<PatternElement>()
@@ -193,7 +195,7 @@ class Parser(private val tokens: List<Token>) {
                     subs.add(parsePatternElement())
                 }
                 consume(TokenType.RPAREN, "Expected ')' to close parenthesis")
-                PatternElement.ParenStructure(subs)
+                PatternElement.PatternParenStructure(subs)
             }
             else -> {
                 throw syntaxError("Unexpected token in pattern: ${peek().value}")
@@ -215,37 +217,37 @@ class Parser(private val tokens: List<Token>) {
         skipWhitespaceAndComments()
 
         if (match(TokenType.COMMA)) {
-            return ResultElement.Symbol(",")
+            return ResultElement.ResultSymbol(",")
         }
         if (match(TokenType.COLON)) {
-            return ResultElement.Symbol(":")
+            return ResultElement.ResultSymbol(":")
         }
 
         // Унарный минус
         if (match(TokenType.UNARY_MINUS)) {
             val operand = parseResultElement()
-            if (operand !is ResultElement.Literal) {
+            if (operand !is ResultElement.ResultLiteral) {
                 throw syntaxError("Unary minus applies only to literal values for now")
             }
-            return ResultElement.Literal("-${operand.value}")
+            return ResultElement.ResultLiteral("-${operand.value}")
         }
 
         return when {
             match(TokenType.S_VAR, TokenType.T_VAR, TokenType.E_VAR) -> {
                 val tk = previous()
-                ResultElement.Variable(tk.type, tk.value)
+                ResultElement.ResultVariable(tk.type, tk.value)
             }
             match(TokenType.LITERAL) -> {
                 val tk = previous()
-                ResultElement.Literal(tk.value)
+                ResultElement.ResultLiteral(tk.value)
             }
             match(TokenType.NUMBER) -> {
                 val tk = previous()
-                ResultElement.Number(tk.value.toInt())
+                ResultElement.ResultNumber(tk.value.toInt())
             }
             match(TokenType.NAME, TokenType.STRING) -> {
                 val tk = previous()
-                ResultElement.StringVal(tk.value)
+                ResultElement.ResultStringVal(tk.value)
             }
             match(TokenType.ANGLE_L) -> {
                 val ctorTok = consume(TokenType.NAME, "Expected constructor name after '<'")
@@ -256,7 +258,7 @@ class Parser(private val tokens: List<Token>) {
                     subs.add(parseResultElement())
                 }
                 consume(TokenType.ANGLE_R, "Expected '>' to close structure")
-                ResultElement.AngleStructure(ctorTok.value, subs)
+                ResultElement.ResultAngleStructure(ctorTok.value, subs)
             }
             match(TokenType.LPAREN) -> {
                 val subs = mutableListOf<ResultElement>()
@@ -266,7 +268,7 @@ class Parser(private val tokens: List<Token>) {
                     subs.add(parseResultElement())
                 }
                 consume(TokenType.RPAREN, "Expected ')' to close parenthesis")
-                ResultElement.ParenStructure(subs)
+                ResultElement.ResultParenStructure(subs)
             }
             else -> {
                 throw syntaxError("Unexpected token in result: ${peek().value}")

@@ -1,5 +1,4 @@
-import main.kotlin.Parser
-import main.kotlin.Parser.PatternElement
+import Parser.PatternElement
 import org.junit.jupiter.api.Assertions.assertFalse
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
@@ -13,15 +12,15 @@ class PatternComparatorTest {
         // Паттерн 1: ('A' e.x)
         val pattern1 = Parser.Pattern(
             listOf(
-                PatternElement.Literal("A"),
-                PatternElement.Variable("e", "x")
+                PatternElement.PatternLiteral("A"),
+                PatternElement.PatternVariable("e", "x")
             )
         )
         // Паттерн 2: ('A' e.y) – переменная переименована, но тип тот же ('e')
         val pattern2 = Parser.Pattern(
             listOf(
-                PatternElement.Literal("A"),
-                PatternElement.Variable("e", "y")
+                PatternElement.PatternLiteral("A"),
+                PatternElement.PatternVariable("e", "y")
             )
         )
 
@@ -34,15 +33,15 @@ class PatternComparatorTest {
         // Паттерн 1: ('A' e.x)
         val pattern1 = Parser.Pattern(
             listOf(
-                PatternElement.Literal("A"),
-                PatternElement.Variable("e", "x")
+                PatternElement.PatternLiteral("A"),
+                PatternElement.PatternVariable("e", "x")
             )
         )
         // Паттерн 2: ('B' e.x)
         val pattern2 = Parser.Pattern(
             listOf(
-                PatternElement.Literal("B"),
-                PatternElement.Variable("e", "x")
+                PatternElement.PatternLiteral("B"),
+                PatternElement.PatternVariable("e", "x")
             )
         )
 
@@ -55,10 +54,10 @@ class PatternComparatorTest {
         // Паттерн 1: (('A' e.x))
         val pattern1 = Parser.Pattern(
             listOf(
-                PatternElement.ParenStructure(
+                PatternElement.PatternParenStructure(
                     listOf(
-                        PatternElement.Literal("A"),
-                        PatternElement.Variable("e", "x")
+                        PatternElement.PatternLiteral("A"),
+                        PatternElement.PatternVariable("e", "x")
                     )
                 )
             )
@@ -66,10 +65,10 @@ class PatternComparatorTest {
         // Паттерн 2: (('A' e.y)) – переменная переименована
         val pattern2 = Parser.Pattern(
             listOf(
-                PatternElement.ParenStructure(
+                PatternElement.PatternParenStructure(
                     listOf(
-                        PatternElement.Literal("A"),
-                        PatternElement.Variable("e", "y")
+                        PatternElement.PatternLiteral("A"),
+                        PatternElement.PatternVariable("e", "y")
                     )
                 )
             )
@@ -84,14 +83,14 @@ class PatternComparatorTest {
         // Порядок важен, поэтому ('A' e.x) и (e.x 'A') должны быть не эквивалентны.
         val pattern1 = Parser.Pattern(
             listOf(
-                PatternElement.Literal("A"),
-                PatternElement.Variable("e", "x")
+                PatternElement.PatternLiteral("A"),
+                PatternElement.PatternVariable("e", "x")
             )
         )
         val pattern2 = Parser.Pattern(
             listOf(
-                PatternElement.Variable("e", "x"),
-                PatternElement.Literal("A")
+                PatternElement.PatternVariable("e", "x"),
+                PatternElement.PatternLiteral("A")
             )
         )
         val areEq = comparator.areEquivalent(pattern1, pattern2)
@@ -103,27 +102,27 @@ class PatternComparatorTest {
         // Паттерн 1: (Outer (e.x 'B') 'C')
         val pattern1 = Parser.Pattern(
             listOf(
-                PatternElement.Literal("Outer"),
-                PatternElement.ParenStructure(
+                PatternElement.PatternLiteral("Outer"),
+                PatternElement.PatternParenStructure(
                     listOf(
-                        PatternElement.Variable("e", "x"),
-                        PatternElement.Literal("B")
+                        PatternElement.PatternVariable("e", "x"),
+                        PatternElement.PatternLiteral("B")
                     )
                 ),
-                PatternElement.Literal("C")
+                PatternElement.PatternLiteral("C")
             )
         )
         // Паттерн 2: (Outer (e.y 'B') 'C')
         val pattern2 = Parser.Pattern(
             listOf(
-                PatternElement.Literal("Outer"),
-                PatternElement.ParenStructure(
+                PatternElement.PatternLiteral("Outer"),
+                PatternElement.PatternParenStructure(
                     listOf(
-                        PatternElement.Variable("e", "y"), // переименование переменной
-                        PatternElement.Literal("B")
+                        PatternElement.PatternVariable("e", "y"), // переименование переменной
+                        PatternElement.PatternLiteral("B")
                     )
                 ),
-                PatternElement.Literal("C")
+                PatternElement.PatternLiteral("C")
             )
         )
         val areEq = comparator.areEquivalent(pattern1, pattern2)
@@ -135,27 +134,27 @@ class PatternComparatorTest {
         // Паттерн 1: (Outer (e.x 'B') 'C')
         val pattern1 = Parser.Pattern(
             listOf(
-                PatternElement.Literal("Outer"),
-                PatternElement.ParenStructure(
+                PatternElement.PatternLiteral("Outer"),
+                PatternElement.PatternParenStructure(
                     listOf(
-                        PatternElement.Variable("e", "x"),
-                        PatternElement.Literal("B")
+                        PatternElement.PatternVariable("e", "x"),
+                        PatternElement.PatternLiteral("B")
                     )
                 ),
-                PatternElement.Literal("C")
+                PatternElement.PatternLiteral("C")
             )
         )
         // Паттерн 2: (Outer ('B' e.x) 'C') – порядок элементов во вложенной группе поменян
         val pattern2 = Parser.Pattern(
             listOf(
-                PatternElement.Literal("Outer"),
-                PatternElement.ParenStructure(
+                PatternElement.PatternLiteral("Outer"),
+                PatternElement.PatternParenStructure(
                     listOf(
-                        PatternElement.Literal("B"),
-                        PatternElement.Variable("e", "x")
+                        PatternElement.PatternLiteral("B"),
+                        PatternElement.PatternVariable("e", "x")
                     )
                 ),
-                PatternElement.Literal("C")
+                PatternElement.PatternLiteral("C")
             )
         )
         val areEq = comparator.areEquivalent(pattern1, pattern2)
@@ -167,29 +166,29 @@ class PatternComparatorTest {
         // Паттерн 1: (Outer (e.x 'B') 'C', e.x)
         val pattern1 = Parser.Pattern(
             listOf(
-                PatternElement.Literal("Outer"),
-                PatternElement.ParenStructure(
+                PatternElement.PatternLiteral("Outer"),
+                PatternElement.PatternParenStructure(
                     listOf(
-                        PatternElement.Variable("e", "x"),
-                        PatternElement.Literal("B")
+                        PatternElement.PatternVariable("e", "x"),
+                        PatternElement.PatternLiteral("B")
                     )
                 ),
-                PatternElement.Literal("C"),
-                PatternElement.Variable("e", "x")
+                PatternElement.PatternLiteral("C"),
+                PatternElement.PatternVariable("e", "x")
             )
         )
         // Паттерн 2: (Outer (e.x 'B') 'C', e.x)
         val pattern2 = Parser.Pattern(
             listOf(
-                PatternElement.Literal("Outer"),
-                PatternElement.ParenStructure(
+                PatternElement.PatternLiteral("Outer"),
+                PatternElement.PatternParenStructure(
                     listOf(
-                        PatternElement.Variable("e", "x"),
-                        PatternElement.Literal("B")
+                        PatternElement.PatternVariable("e", "x"),
+                        PatternElement.PatternLiteral("B")
                     )
                 ),
-                PatternElement.Literal("C"),
-                PatternElement.Variable("e", "x")
+                PatternElement.PatternLiteral("C"),
+                PatternElement.PatternVariable("e", "x")
             )
         )
         val areEq = comparator.areEquivalent(pattern1, pattern2)
@@ -201,29 +200,29 @@ class PatternComparatorTest {
         // Паттерн 1: (Outer (e.x 'B') 'C', e.x)
         val pattern1 = Parser.Pattern(
             listOf(
-                PatternElement.Literal("Outer"),
-                PatternElement.ParenStructure(
+                PatternElement.PatternLiteral("Outer"),
+                PatternElement.PatternParenStructure(
                     listOf(
-                        PatternElement.Variable("e", "x"),
-                        PatternElement.Literal("B")
+                        PatternElement.PatternVariable("e", "x"),
+                        PatternElement.PatternLiteral("B")
                     )
                 ),
-                PatternElement.Literal("C"),
-                PatternElement.Variable("e", "x")
+                PatternElement.PatternLiteral("C"),
+                PatternElement.PatternVariable("e", "x")
             )
         )
         // Паттерн 2: (Outer (e.x 'B') 'C', e.y)
         val pattern2 = Parser.Pattern(
             listOf(
-                PatternElement.Literal("Outer"),
-                PatternElement.ParenStructure(
+                PatternElement.PatternLiteral("Outer"),
+                PatternElement.PatternParenStructure(
                     listOf(
-                        PatternElement.Variable("e", "x"),
-                        PatternElement.Literal("B")
+                        PatternElement.PatternVariable("e", "x"),
+                        PatternElement.PatternLiteral("B")
                     )
                 ),
-                PatternElement.Literal("C"),
-                PatternElement.Variable("e", "y")
+                PatternElement.PatternLiteral("C"),
+                PatternElement.PatternVariable("e", "y")
             )
         )
         val areEq = comparator.areEquivalent(pattern1, pattern2)

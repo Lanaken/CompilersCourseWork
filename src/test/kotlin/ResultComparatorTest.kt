@@ -1,5 +1,4 @@
-import main.kotlin.Parser
-import main.kotlin.Parser.ResultElement
+import Parser.ResultElement
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 
@@ -11,14 +10,14 @@ class ResultComparatorTest {
     fun `should be equivalent when variables are renamed with same type`() {
         val result1 = Parser.Result(
             listOf(
-                ResultElement.Literal("A"),
-                ResultElement.Variable("e", "x")
+                ResultElement.ResultLiteral("A"),
+                ResultElement.ResultVariable("e", "x")
             )
         )
         val result2 = Parser.Result(
             listOf(
-                ResultElement.Literal("A"),
-                ResultElement.Variable("e", "y")
+                ResultElement.ResultLiteral("A"),
+                ResultElement.ResultVariable("e", "y")
             )
         )
         val areEq = comparator.areEquivalent(result1, result2,
@@ -33,14 +32,14 @@ class ResultComparatorTest {
     fun `should not be equivalent when literals have different values`() {
         val result1 = Parser.Result(
             listOf(
-                ResultElement.Literal("A"),
-                ResultElement.Variable("e", "x")
+                ResultElement.ResultLiteral("A"),
+                ResultElement.ResultVariable("e", "x")
             )
         )
         val result2 = Parser.Result(
             listOf(
-                ResultElement.Literal("B"),
-                ResultElement.Variable("e", "x")
+                ResultElement.ResultLiteral("B"),
+                ResultElement.ResultVariable("e", "x")
             )
         )
         val areEq = comparator.areEquivalent(result1, result2,
@@ -55,27 +54,27 @@ class ResultComparatorTest {
     fun `should be equivalent when nested angle structures with renamed variables`() {
         val result1 = Parser.Result(
             listOf(
-                ResultElement.AngleStructure("F", listOf(
-                    ResultElement.ParenStructure(
+                ResultElement.ResultAngleStructure("F", listOf(
+                    ResultElement.ResultParenStructure(
                         listOf(
-                            ResultElement.Literal("A"),
-                            ResultElement.Variable("e", "x")
+                            ResultElement.ResultLiteral("A"),
+                            ResultElement.ResultVariable("e", "x")
                         )
                     ),
-                    ResultElement.Literal("B")
+                    ResultElement.ResultLiteral("B")
                 ))
             )
         )
         val result2 = Parser.Result(
             listOf(
-                ResultElement.AngleStructure("F", listOf(
-                    ResultElement.ParenStructure(
+                ResultElement.ResultAngleStructure("F", listOf(
+                    ResultElement.ResultParenStructure(
                         listOf(
-                            ResultElement.Literal("A"),
-                            ResultElement.Variable("e", "y")
+                            ResultElement.ResultLiteral("A"),
+                            ResultElement.ResultVariable("e", "y")
                         )
                     ),
-                    ResultElement.Literal("B")
+                    ResultElement.ResultLiteral("B")
                 ))
             )
         )
@@ -91,14 +90,14 @@ class ResultComparatorTest {
     fun `should not be equivalent when order of elements differs`() {
         val result1 = Parser.Result(
             listOf(
-                ResultElement.Literal("A"),
-                ResultElement.Variable("e", "x")
+                ResultElement.ResultLiteral("A"),
+                ResultElement.ResultVariable("e", "x")
             )
         )
         val result2 = Parser.Result(
             listOf(
-                ResultElement.Variable("e", "x"),
-                ResultElement.Literal("A")
+                ResultElement.ResultVariable("e", "x"),
+                ResultElement.ResultLiteral("A")
             )
         )
         val areEq = comparator.areEquivalent(result1, result2,
@@ -113,30 +112,30 @@ class ResultComparatorTest {
     fun `should be equivalent when deeply nested result with renamed variables`() {
         val result1 = Parser.Result(
             listOf(
-                ResultElement.AngleStructure("F", listOf(
-                    ResultElement.ParenStructure(
+                ResultElement.ResultAngleStructure("F", listOf(
+                    ResultElement.ResultParenStructure(
                         listOf(
-                            ResultElement.Literal("A"),
-                            ResultElement.Variable("e", "x")
+                            ResultElement.ResultLiteral("A"),
+                            ResultElement.ResultVariable("e", "x")
                         )
                     ),
-                    ResultElement.AngleStructure("G", listOf(
-                        ResultElement.Literal("B")
+                    ResultElement.ResultAngleStructure("G", listOf(
+                        ResultElement.ResultLiteral("B")
                     ))
                 ))
             )
         )
         val result2 = Parser.Result(
             listOf(
-                ResultElement.AngleStructure("F", listOf(
-                    ResultElement.ParenStructure(
+                ResultElement.ResultAngleStructure("F", listOf(
+                    ResultElement.ResultParenStructure(
                         listOf(
-                            ResultElement.Literal("A"),
-                            ResultElement.Variable("e", "y")
+                            ResultElement.ResultLiteral("A"),
+                            ResultElement.ResultVariable("e", "y")
                         )
                     ),
-                    ResultElement.AngleStructure("G", listOf(
-                        ResultElement.Literal("B")
+                    ResultElement.ResultAngleStructure("G", listOf(
+                        ResultElement.ResultLiteral("B")
                     ))
                 ))
             )
@@ -153,29 +152,29 @@ class ResultComparatorTest {
     fun `should not be equivalent when nested elements order differs`() {
         val result1 = Parser.Result(
             listOf(
-                ResultElement.AngleStructure("F", listOf(
-                    ResultElement.ParenStructure(
+                ResultElement.ResultAngleStructure("F", listOf(
+                    ResultElement.ResultParenStructure(
                         listOf(
-                            ResultElement.Literal("A"),
-                            ResultElement.Variable("e", "x")
+                            ResultElement.ResultLiteral("A"),
+                            ResultElement.ResultVariable("e", "x")
                         )
                     ),
-                    ResultElement.AngleStructure("G", listOf(
-                        ResultElement.Literal("B")
+                    ResultElement.ResultAngleStructure("G", listOf(
+                        ResultElement.ResultLiteral("B")
                     ))
                 ))
             )
         )
         val result2 = Parser.Result(
             listOf(
-                ResultElement.AngleStructure("F", listOf(
-                    ResultElement.AngleStructure("G", listOf(
-                        ResultElement.Literal("B")
+                ResultElement.ResultAngleStructure("F", listOf(
+                    ResultElement.ResultAngleStructure("G", listOf(
+                        ResultElement.ResultLiteral("B")
                     )),
-                    ResultElement.ParenStructure(
+                    ResultElement.ResultParenStructure(
                         listOf(
-                            ResultElement.Literal("A"),
-                            ResultElement.Variable("e", "x")
+                            ResultElement.ResultLiteral("A"),
+                            ResultElement.ResultVariable("e", "x")
                         )
                     )
                 ))
@@ -193,14 +192,14 @@ class ResultComparatorTest {
     fun `should be equivalent when numeric literals are the same with renamed variables`() {
         val result1 = Parser.Result(
             listOf(
-                ResultElement.Number(42),
-                ResultElement.Variable("e", "x")
+                ResultElement.ResultNumber(42),
+                ResultElement.ResultVariable("e", "x")
             )
         )
         val result2 = Parser.Result(
             listOf(
-                ResultElement.Number(42),
-                ResultElement.Variable("e", "y")
+                ResultElement.ResultNumber(42),
+                ResultElement.ResultVariable("e", "y")
             )
         )
         val areEq = comparator.areEquivalent(result1, result2,
@@ -215,14 +214,14 @@ class ResultComparatorTest {
     fun `should not be equivalent when numeric literals differ`() {
         val result1 = Parser.Result(
             listOf(
-                ResultElement.Number(42),
-                ResultElement.Variable("e", "x")
+                ResultElement.ResultNumber(42),
+                ResultElement.ResultVariable("e", "x")
             )
         )
         val result2 = Parser.Result(
             listOf(
-                ResultElement.Number(43),
-                ResultElement.Variable("e", "x")
+                ResultElement.ResultNumber(43),
+                ResultElement.ResultVariable("e", "x")
             )
         )
         val areEq = comparator.areEquivalent(result1, result2,
@@ -237,14 +236,14 @@ class ResultComparatorTest {
     fun `should not be equivalent when variables have different types`() {
         val result1 = Parser.Result(
             listOf(
-                ResultElement.Variable("s", "x"),
-                ResultElement.Literal("A")
+                ResultElement.ResultVariable("s", "x"),
+                ResultElement.ResultLiteral("A")
             )
         )
         val result2 = Parser.Result(
             listOf(
-                ResultElement.Variable("e", "x"),
-                ResultElement.Literal("A")
+                ResultElement.ResultVariable("e", "x"),
+                ResultElement.ResultLiteral("A")
             )
         )
         val areEq = comparator.areEquivalent(result1, result2,
@@ -259,12 +258,12 @@ class ResultComparatorTest {
     fun `should not be equivalent when functions have different names at higher levels`() {
         val result1 = Parser.Result(
             listOf(
-                ResultElement.AngleStructure("F", listOf(ResultElement.Variable("e", "x")))
+                ResultElement.ResultAngleStructure("F", listOf(ResultElement.ResultVariable("e", "x")))
             )
         )
         val result2 = Parser.Result(
             listOf(
-                ResultElement.AngleStructure("G", listOf(ResultElement.Variable("e", "x")))
+                ResultElement.ResultAngleStructure("G", listOf(ResultElement.ResultVariable("e", "x")))
             )
         )
         val areEqLevel0 = comparator.areEquivalent(result1, result2,

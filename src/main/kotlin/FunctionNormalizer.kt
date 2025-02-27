@@ -1,6 +1,3 @@
-import main.kotlin.Parser
-
-
 object FunctionNormalizer {
     fun normalize(program: Parser.Program): Parser.Program {
         val normalizedElements = program.elements.map { element ->
@@ -30,22 +27,22 @@ object FunctionNormalizer {
 
     private fun normalizePatternElement(element: Parser.PatternElement): Parser.PatternElement {
         return when (element) {
-            is Parser.PatternElement.StringVal -> normalizeStringVal(element)
-            is Parser.PatternElement.ParenStructure ->
-                Parser.PatternElement.ParenStructure(element.elements.map { normalizePatternElement(it) })
+            is Parser.PatternElement.PatternStringVal -> normalizeStringVal(element)
+            is Parser.PatternElement.PatternParenStructure ->
+                Parser.PatternElement.PatternParenStructure(element.elements.map { normalizePatternElement(it) })
             else -> element
         }
     }
 
     private fun normalizeResultElement(element: Parser.ResultElement): Parser.ResultElement {
         return when (element) {
-            is Parser.ResultElement.StringVal -> normalizeStringVal(element)
-            is Parser.ResultElement.AngleStructure ->
-                Parser.ResultElement.AngleStructure(
+            is Parser.ResultElement.ResultStringVal -> normalizeStringVal(element)
+            is Parser.ResultElement.ResultAngleStructure ->
+                Parser.ResultElement.ResultAngleStructure(
                     element.constructor, element.elements.map { normalizeResultElement(it) }
                 )
-            is Parser.ResultElement.ParenStructure ->
-                Parser.ResultElement.ParenStructure(element.elements.map { normalizeResultElement(it) })
+            is Parser.ResultElement.ResultParenStructure ->
+                Parser.ResultElement.ResultParenStructure(element.elements.map { normalizeResultElement(it) })
             else -> element
         }
     }
@@ -56,14 +53,14 @@ object FunctionNormalizer {
         var buffer: StringBuilder? = null
 
         for (element in elements) {
-            if (element is Parser.ResultElement.Literal) {
+            if (element is Parser.ResultElement.ResultLiteral) {
                 if (buffer == null) {
                     buffer = StringBuilder()
                 }
                 buffer.append(element.value.replace("'", "")) // Убираем кавычки временно
             } else {
                 if (buffer != null) {
-                    merged.add(Parser.ResultElement.Literal("'$buffer'")) // Возвращаем одинарные кавычки
+                    merged.add(Parser.ResultElement.ResultLiteral("'$buffer'")) // Возвращаем одинарные кавычки
                     buffer = null
                 }
                 merged.add(element)
@@ -71,7 +68,7 @@ object FunctionNormalizer {
         }
 
         if (buffer != null) {
-            merged.add(Parser.ResultElement.Literal("'$buffer'")) // Возвращаем кавычки
+            merged.add(Parser.ResultElement.ResultLiteral("'$buffer'")) // Возвращаем кавычки
         }
 
         return merged
@@ -82,14 +79,14 @@ object FunctionNormalizer {
         var buffer: StringBuilder? = null
 
         for (element in elements) {
-            if (element is Parser.PatternElement.Literal) {
+            if (element is Parser.PatternElement.PatternLiteral) {
                 if (buffer == null) {
                     buffer = StringBuilder()
                 }
                 buffer.append(element.value.replace("'", "")) // Убираем кавычки временно
             } else {
                 if (buffer != null) {
-                    merged.add(Parser.PatternElement.Literal("'$buffer'")) // Возвращаем одинарные кавычки
+                    merged.add(Parser.PatternElement.PatternLiteral("'$buffer'")) // Возвращаем одинарные кавычки
                     buffer = null
                 }
                 merged.add(element)
@@ -97,25 +94,25 @@ object FunctionNormalizer {
         }
 
         if (buffer != null) {
-            merged.add(Parser.PatternElement.Literal("'$buffer'")) // Возвращаем кавычки
+            merged.add(Parser.PatternElement.PatternLiteral("'$buffer'")) // Возвращаем кавычки
         }
 
         return merged
     }
 
-    private fun normalizeStringVal(element: Parser.PatternElement.StringVal): Parser.PatternElement.StringVal {
+    private fun normalizeStringVal(element: Parser.PatternElement.PatternStringVal): Parser.PatternElement.PatternStringVal {
         return if (element.value.startsWith("\"") && element.value.endsWith("\"")) {
             element // Если уже в кавычках, не меняем
         } else {
-            Parser.PatternElement.StringVal("\"${element.value}\"") // Добавляем кавычки
+            Parser.PatternElement.PatternStringVal("\"${element.value}\"") // Добавляем кавычки
         }
     }
 
-    private fun normalizeStringVal(element: Parser.ResultElement.StringVal): Parser.ResultElement.StringVal {
+    private fun normalizeStringVal(element: Parser.ResultElement.ResultStringVal): Parser.ResultElement.ResultStringVal {
         return if (element.value.startsWith("\"") && element.value.endsWith("\"")) {
             element // Если уже в кавычках, не меняем
         } else {
-            Parser.ResultElement.StringVal("\"${element.value}\"") // Добавляем кавычки
+            Parser.ResultElement.ResultStringVal("\"${element.value}\"") // Добавляем кавычки
         }
     }
 }

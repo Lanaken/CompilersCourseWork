@@ -1,4 +1,4 @@
-import main.kotlin.Parser
+
 
 class PatternComparator {
     /**
@@ -24,25 +24,25 @@ class PatternComparator {
         reverseMap: MutableMap<Pair<String, String>, String>
     ): Boolean {
         return when {
-            e1 is Parser.PatternElement.Variable && e2 is Parser.PatternElement.Variable ->
+            e1 is Parser.PatternElement.PatternVariable && e2 is Parser.PatternElement.PatternVariable ->
                 matchVariable(e1, e2, forwardMap, reverseMap)
-            e1 is Parser.PatternElement.Literal && e2 is Parser.PatternElement.Literal ->
+            e1 is Parser.PatternElement.PatternLiteral && e2 is Parser.PatternElement.PatternLiteral ->
                 e1.value == e2.value
-            e1 is Parser.PatternElement.Number && e2 is Parser.PatternElement.Number ->
+            e1 is Parser.PatternElement.PatternNumber && e2 is Parser.PatternElement.PatternNumber ->
                 e1.value == e2.value
-            e1 is Parser.PatternElement.StringVal && e2 is Parser.PatternElement.StringVal ->
+            e1 is Parser.PatternElement.PatternStringVal && e2 is Parser.PatternElement.PatternStringVal ->
                 e1.value == e2.value
-            e1 is Parser.PatternElement.ParenStructure && e2 is Parser.PatternElement.ParenStructure ->
+            e1 is Parser.PatternElement.PatternParenStructure && e2 is Parser.PatternElement.PatternParenStructure ->
                 areEquivalent(Parser.Pattern(e1.elements), Parser.Pattern(e2.elements), forwardMap, reverseMap)
-            e1 is Parser.PatternElement.Symbol && e2 is Parser.PatternElement.Symbol ->
+            e1 is Parser.PatternElement.PatternSymbol && e2 is Parser.PatternElement.PatternSymbol ->
                 e1.text == e2.text
             else -> false
         }
     }
 
     private fun matchVariable(
-        v1: Parser.PatternElement.Variable,
-        v2: Parser.PatternElement.Variable,
+        v1: Parser.PatternElement.PatternVariable,
+        v2: Parser.PatternElement.PatternVariable,
         forwardMap: MutableMap<Pair<String, String>, String>,
         reverseMap: MutableMap<Pair<String, String>, String>
     ): Boolean {

@@ -1,8 +1,11 @@
-package main.kotlin
+import Parser.*
+import Parser.ResultElement.*
+import Parser.PatternElement.*
+
 
 object AstTreePrinter {
 
-    fun printAst(program: Parser.Program, indent: String = ""): String {
+    fun printAst(program: Program, indent: String = ""): String {
         val builder = StringBuilder()
         builder.appendLine("${indent}Program:")
         program.elements.forEach { element ->
@@ -11,16 +14,16 @@ object AstTreePrinter {
         return builder.toString()
     }
 
-    private fun printProgramElement(element: Parser.ProgramElement, indent: String): String {
+    private fun printProgramElement(element: ProgramElement, indent: String): String {
         return when (element) {
-            is Parser.ProgramElement.ExternDeclaration ->
+            is ProgramElement.ExternDeclaration ->
                 printExternDeclaration(element, indent)
-            is Parser.ProgramElement.FunctionDefinition ->
+            is ProgramElement.FunctionDefinition ->
                 printFunctionDefinition(element, indent)
         }
     }
 
-    private fun printExternDeclaration(decl: Parser.ProgramElement.ExternDeclaration, indent: String): String {
+    private fun printExternDeclaration(decl: ProgramElement.ExternDeclaration, indent: String): String {
         val builder = StringBuilder()
         builder.appendLine("${indent}ExternDeclaration:")
         decl.names.forEach { name ->
@@ -29,7 +32,7 @@ object AstTreePrinter {
         return builder.toString()
     }
 
-    private fun printFunctionDefinition(func: Parser.ProgramElement.FunctionDefinition, indent: String): String {
+    private fun printFunctionDefinition(func: ProgramElement.FunctionDefinition, indent: String): String {
         val builder = StringBuilder()
         builder.appendLine("${indent}FunctionDefinition: ${func.name} (EntryPoint: ${func.isEntryPoint})")
         func.body.forEach { sentence ->
@@ -38,7 +41,7 @@ object AstTreePrinter {
         return builder.toString()
     }
 
-    private fun printSentence(sentence: Parser.Sentence, indent: String): String {
+    private fun printSentence(sentence: Sentence, indent: String): String {
         val builder = StringBuilder()
         builder.appendLine("${indent}Sentence:")
         builder.appendLine("$indent  Pattern:")
@@ -48,7 +51,7 @@ object AstTreePrinter {
         return builder.toString()
     }
 
-    private fun printPattern(pattern: Parser.Pattern, indent: String): String {
+    private fun printPattern(pattern: Pattern, indent: String): String {
         val builder = StringBuilder()
         pattern.elements.forEach { element ->
             builder.append(printPatternElement(element, indent))
@@ -56,17 +59,17 @@ object AstTreePrinter {
         return builder.toString()
     }
 
-    private fun printPatternElement(element: Parser.PatternElement, indent: String): String {
+    private fun printPatternElement(element: PatternElement, indent: String): String {
         return when (element) {
-            is Parser.PatternElement.Variable ->
+            is PatternVariable ->
                 "$indent Variable(${element.type}): ${element.name}\n"
-            is Parser.PatternElement.Literal ->
+            is PatternLiteral ->
                 "$indent Literal: ${element.value}\n"
-            is Parser.PatternElement.Number ->
+            is PatternNumber ->
                 "$indent Number: ${element.value}\n"
-            is Parser.PatternElement.StringVal ->
+            is PatternStringVal ->
                 "$indent StringVal: ${element.value}\n"
-            is Parser.PatternElement.ParenStructure -> {
+            is PatternParenStructure -> {
                 val builder = StringBuilder()
                 builder.appendLine("$indent ParenStructure:")
                 element.elements.forEach { subElem ->
@@ -74,13 +77,13 @@ object AstTreePrinter {
                 }
                 builder.toString()
             }
-            is Parser.PatternElement.Symbol ->
+            is PatternSymbol ->
                 "$indent Symbol: ${element.text}\n"
         }
     }
 
 
-    private fun printResult(result: Parser.Result, indent: String): String {
+    private fun printResult(result: Result, indent: String): String {
         val builder = StringBuilder()
         result.elements.forEach { element ->
             builder.append(printResultElement(element, indent))
@@ -88,17 +91,17 @@ object AstTreePrinter {
         return builder.toString()
     }
 
-    private fun printResultElement(element: Parser.ResultElement, indent: String): String {
+    private fun printResultElement(element: ResultElement, indent: String): String {
         return when (element) {
-            is Parser.ResultElement.Variable ->
+            is ResultVariable ->
                 "$indent Variable(${element.type}): ${element.name}\n"
-            is Parser.ResultElement.Literal ->
+            is ResultLiteral ->
                 "$indent Literal: ${element.value}\n"
-            is Parser.ResultElement.Number ->
+            is ResultNumber ->
                 "$indent Number: ${element.value}\n"
-            is Parser.ResultElement.StringVal ->
+            is ResultStringVal ->
                 "$indent StringVal: ${element.value}\n"
-            is Parser.ResultElement.AngleStructure -> {
+            is ResultAngleStructure -> {
                 val builder = StringBuilder()
                 builder.appendLine("$indent AngleStructure(constructor='${element.constructor}')")
                 element.elements.forEach { subElem ->
@@ -106,7 +109,7 @@ object AstTreePrinter {
                 }
                 builder.toString()
             }
-            is Parser.ResultElement.ParenStructure -> {
+            is ResultParenStructure -> {
                 val builder = StringBuilder()
                 builder.appendLine("$indent ParenStructure:")
                 element.elements.forEach { subElem ->
@@ -114,7 +117,7 @@ object AstTreePrinter {
                 }
                 builder.toString()
             }
-            is Parser.ResultElement.Symbol ->
+            is ResultSymbol ->
                 "$indent Symbol: ${element.text}\n"
         }
     }

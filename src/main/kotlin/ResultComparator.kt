@@ -1,4 +1,10 @@
-import main.kotlin.Parser
+import Parser.ResultElement.ResultAngleStructure
+import Parser.ResultElement.ResultLiteral
+import Parser.ResultElement.ResultNumber
+import Parser.ResultElement.ResultParenStructure
+import Parser.ResultElement.ResultStringVal
+import Parser.ResultElement.ResultSymbol
+import Parser.ResultElement.ResultVariable
 
 class ResultComparator {
     /**
@@ -29,19 +35,19 @@ class ResultComparator {
         level: Int
     ): Boolean {
         return when {
-            e1 is Parser.ResultElement.Variable && e2 is Parser.ResultElement.Variable ->
+            e1 is ResultVariable && e2 is ResultVariable ->
                 matchVariable(e1, e2, forwardMap, reverseMap)
 
-            e1 is Parser.ResultElement.Literal && e2 is Parser.ResultElement.Literal ->
+            e1 is ResultLiteral && e2 is ResultLiteral ->
                 e1.value == e2.value
 
-            e1 is Parser.ResultElement.Number && e2 is Parser.ResultElement.Number ->
+            e1 is ResultNumber && e2 is ResultNumber ->
                 e1.value == e2.value
 
-            e1 is Parser.ResultElement.StringVal && e2 is Parser.ResultElement.StringVal ->
+            e1 is ResultStringVal && e2 is ResultStringVal ->
                 e1.value == e2.value
 
-            e1 is Parser.ResultElement.AngleStructure && e2 is Parser.ResultElement.AngleStructure -> {
+            e1 is ResultAngleStructure && e2 is ResultAngleStructure -> {
                 val firstFunctionGroup = bisimulationGroups.indexOfFirst { it.contains(e1.constructor) }
                 val secondFunctionGroup = bisimulationGroups.indexOfFirst { it.contains(e2.constructor) }
                 if (level > 0)
@@ -57,7 +63,7 @@ class ResultComparator {
                 )
             }
 
-            e1 is Parser.ResultElement.ParenStructure && e2 is Parser.ResultElement.ParenStructure ->
+            e1 is ResultParenStructure && e2 is ResultParenStructure ->
                 areEquivalent(
                     Parser.Result(e1.elements),
                     Parser.Result(e2.elements),
@@ -67,7 +73,7 @@ class ResultComparator {
                     level
                 )
 
-            e1 is Parser.ResultElement.Symbol && e2 is Parser.ResultElement.Symbol ->
+            e1 is ResultSymbol && e2 is ResultSymbol ->
                 e1.text == e2.text
 
             else -> false
@@ -75,8 +81,8 @@ class ResultComparator {
     }
 
     private fun matchVariable(
-        v1: Parser.ResultElement.Variable,
-        v2: Parser.ResultElement.Variable,
+        v1: ResultVariable,
+        v2: ResultVariable,
         forwardMap: MutableMap<Pair<String, String>, String>,
         reverseMap: MutableMap<Pair<String, String>, String>
     ): Boolean {

@@ -1,5 +1,5 @@
-import main.kotlin.Parser.Pattern
-import main.kotlin.Parser.PatternElement
+import Parser.Pattern
+import Parser.PatternElement
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import redundant.PatternCanonicalNormalizer
@@ -12,21 +12,21 @@ class PatternCanonicalNormalizerTest {
         // Паттерн 1: A, e.x, ,, e.x, B
         val p1 = Pattern(
             listOf(
-                PatternElement.Literal("A"),
-                PatternElement.Variable("e", "x"),
-                PatternElement.Symbol(","),
-                PatternElement.Variable("e", "x"),
-                PatternElement.Literal("B")
+                PatternElement.PatternLiteral("A"),
+                PatternElement.PatternVariable("e", "x"),
+                PatternElement.PatternSymbol(","),
+                PatternElement.PatternVariable("e", "x"),
+                PatternElement.PatternLiteral("B")
             )
         )
         // Паттерн 2: A, e.y, ,, e.y, B
         val p2 = Pattern(
             listOf(
-                PatternElement.Literal("A"),
-                PatternElement.Variable("e", "y"),
-                PatternElement.Symbol(","),
-                PatternElement.Variable("e", "y"),
-                PatternElement.Literal("B")
+                PatternElement.PatternLiteral("A"),
+                PatternElement.PatternVariable("e", "y"),
+                PatternElement.PatternSymbol(","),
+                PatternElement.PatternVariable("e", "y"),
+                PatternElement.PatternLiteral("B")
             )
         )
         // После канонизации оба должны дать: [A, v1, ,, v1, B]
@@ -43,21 +43,21 @@ class PatternCanonicalNormalizerTest {
         // Паттерн 1: A, e.x, ,, e.x, B
         val p1 = Pattern(
             listOf(
-                PatternElement.Literal("A"),
-                PatternElement.Variable("e", "x"),
-                PatternElement.Symbol(","),
-                PatternElement.Variable("e", "x"),
-                PatternElement.Literal("B")
+                PatternElement.PatternLiteral("A"),
+                PatternElement.PatternVariable("e", "x"),
+                PatternElement.PatternSymbol(","),
+                PatternElement.PatternVariable("e", "x"),
+                PatternElement.PatternLiteral("B")
             )
         )
         // Паттерн 3: B, e.x, ,, e.x, A (порядок литералов меняется)
         val p3 = Pattern(
             listOf(
-                PatternElement.Literal("B"),
-                PatternElement.Variable("e", "x"),
-                PatternElement.Symbol(","),
-                PatternElement.Variable("e", "x"),
-                PatternElement.Literal("A")
+                PatternElement.PatternLiteral("B"),
+                PatternElement.PatternVariable("e", "x"),
+                PatternElement.PatternSymbol(","),
+                PatternElement.PatternVariable("e", "x"),
+                PatternElement.PatternLiteral("A")
             )
         )
         // Канонические последовательности будут разными: [B, v1, ,, v1, A] != [A, v1, ,, v1, B]
@@ -69,14 +69,14 @@ class PatternCanonicalNormalizerTest {
         // Паттерн 4: X, ( Y, Z ), W
         val p4 = Pattern(
             listOf(
-                PatternElement.Literal("X"),
-                PatternElement.ParenStructure(
+                PatternElement.PatternLiteral("X"),
+                PatternElement.PatternParenStructure(
                     listOf(
-                        PatternElement.Literal("Y"),
-                        PatternElement.Literal("Z")
+                        PatternElement.PatternLiteral("Y"),
+                        PatternElement.PatternLiteral("Z")
                     )
                 ),
-                PatternElement.Literal("W")
+                PatternElement.PatternLiteral("W")
             )
         )
         // Ожидаемая каноническая последовательность: ["X", "(", "Y", "Z", ")", "W"]
@@ -90,14 +90,14 @@ class PatternCanonicalNormalizerTest {
         // Паттерн 5: e.x, e.y, e.x
         val p5 = Pattern(
             listOf(
-                PatternElement.Variable("e", "x"),
-                PatternElement.Variable("e", "y"),
-                PatternElement.Variable("e", "x")
+                PatternElement.PatternVariable("e", "x"),
+                PatternElement.PatternVariable("e", "y"),
+                PatternElement.PatternVariable("e", "x")
             )
         )
         val p6 = Pattern(
             listOf(
-                PatternElement.Literal("df")
+                PatternElement.PatternLiteral("df")
             )
         )
         // Переменные получат канонические ярлыки в порядке появления:
