@@ -146,7 +146,8 @@ class Parser(private val tokens: List<Token>) {
         val pattern = parsePattern()
         consume(TokenType.EQUAL, "Expected '=' in sentence")
         val result = parseResult()
-        consume(TokenType.SEMICOLON, "Expected ';' at end of sentence")
+        if (!check(TokenType.RBRACE))
+            consume(TokenType.SEMICOLON, "Expected ';' at end of sentence")
         return Sentence(pattern, result)
     }
 
@@ -205,9 +206,9 @@ class Parser(private val tokens: List<Token>) {
 
     private fun parseResult(): Result {
         val elems = mutableListOf<ResultElement>()
-        while (!check(TokenType.SEMICOLON) && !isAtEnd()) {
+        while (!check(TokenType.SEMICOLON) && !isAtEnd() && !check(TokenType.RBRACE)) {
             skipWhitespaceAndComments()
-            if (check(TokenType.SEMICOLON)) break
+            if (check(TokenType.SEMICOLON) || check(TokenType.RBRACE)) break
             elems.add(parseResultElement())
         }
         return Result(elems)
@@ -295,6 +296,11 @@ class Parser(private val tokens: List<Token>) {
         if (check(type)) return advance()
         throw syntaxError(msg)
     }
+
+//    private fun consumeAtLeastOne(vararg types: String, msg: String): Token {
+//        if (check(types)) return advance()
+//        throw syntaxError()
+//    }
 
     private fun check(vararg types: String): Boolean {
         if (isAtEnd()) return false

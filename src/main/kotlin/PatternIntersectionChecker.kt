@@ -16,8 +16,9 @@ class PatternIntersectionChecker {
     )
 
     fun hasIntersection(p1: Pattern, p2: Pattern): Boolean {
-        val substs = Substitution()
-        return intersect(p1.elements, p2.elements, substs)
+        val substs1 = Substitution()
+        val susbts2 = Substitution()
+        return intersect(p1.elements, p2.elements, substs1, susbts2)
     }
 
     /**
@@ -27,12 +28,13 @@ class PatternIntersectionChecker {
     private fun intersect(
         elems1: List<PatternElement>,
         elems2: List<PatternElement>,
-        substs: Substitution
+        substs1: Substitution,
+        substs2: Substitution
     ): Boolean {
 
         if (elems1.isEmpty() && elems2.isEmpty()) return true
-        if (elems1.isEmpty()) return canEsSwallow(elems2, substs)
-        if (elems2.isEmpty()) return canEsSwallow(elems1, substs)
+        if (elems1.isEmpty()) return canEsSwallow(elems2, substs1)
+        if (elems2.isEmpty()) return canEsSwallow(elems1, substs2)
 
         val head1 = elems1.first()
         val head2 = elems2.first()
@@ -40,26 +42,26 @@ class PatternIntersectionChecker {
         if (!isEVar(head1) && !isEVar(head2) &&
             !isTVar(head1) && !isTVar(head2)
         ) {
-            return matchOneElement(head1, head2, substs) &&
-                    intersect(elems1.drop(1), elems2.drop(1), substs)
+            return matchOneElement(head1, head2, substs1, substs2) &&
+                    intersect(elems1.drop(1), elems2.drop(1), substs1, substs2)
         }
 
         if (isEVar(head1)) {
             val eVar = head1 as PatternVariable
-            val oldBinding = substs.eBindings[eVar]
+            val oldBinding = substs1.eBindings[eVar]
             if (oldBinding != null) {
-                if (!prefixMatches(oldBinding, elems2, substs)) {
+                if (!prefixMatches(oldBinding, elems2, substs1, substs2)) {
                     return false
                 }
                 val k = oldBinding.size
-                return intersect(elems1.drop(1), elems2.drop(k), substs)
+                return intersect(elems1.drop(1), elems2.drop(k), substs1, substs2)
             } else {
                 for (k in 0..elems2.size) {
-                    val newSubsts = substs.deepCopy()
+                    val newSubsts = substs1.deepCopy()
 
                     newSubsts.eBindings[eVar] = elems2.take(k)
 
-                    if (intersect(elems1.drop(1), elems2.drop(k), newSubsts)) {
+                    if (intersect(elems1.drop(1), elems2.drop(k), newSubsts, substs2)) {
                         return true
                     }
 
@@ -71,21 +73,21 @@ class PatternIntersectionChecker {
 
         if (isEVar(head2)) {
             val eVar = head2 as PatternVariable
-            val oldBinding = substs.eBindings[eVar]
+            val oldBinding = substs2.eBindings[eVar]
             if (oldBinding != null) {
-                if (!prefixMatches(oldBinding, elems1, substs)) {
+                if (!prefixMatches(oldBinding, elems1, substs1, substs2)) {
                     return false
                 }
                 val k = oldBinding.size
-                return intersect(elems1.drop(k), elems2.drop(1), substs)
+                return intersect(elems1.drop(k), elems2.drop(1), substs1, substs2)
             } else {
                 for (k in 0..elems1.size) {
                     val segment = elems1.take(k)
-                    substs.eBindings[eVar] = segment
-                    if (intersect(elems1.drop(k), elems2.drop(1), substs)) {
+                    substs2.eBindings[eVar] = segment
+                    if (intersect(elems1.drop(k), elems2.drop(1), substs1, substs2)) {
                         return true
                     }
-                    substs.eBindings.remove(eVar)
+                    substs2.eBindings.remove(eVar)
                 }
                 return false
             }
@@ -93,45 +95,45 @@ class PatternIntersectionChecker {
 
         if (isTVar(head1)) {
             val tVar = head1 as PatternVariable
-            val oldBinding = substs.tBindings[tVar]
+            val oldBinding = substs1.tBindings[tVar]
             if (oldBinding != null) {
 
-                if (!prefixMatches(oldBinding, elems2, substs)) {
+                if (!prefixMatches(oldBinding, elems2, substs1, substs2)) {
                     return false
                 }
                 val k = oldBinding.size
-                return intersect(elems1.drop(1), elems2.drop(k), substs)
+                return intersect(elems1.drop(1), elems2.drop(k), substs1, substs2)
             } else {
 
                 val oneTerm = takeOneTerm(elems2)
                     ?: return false
-                substs.tBindings[tVar] = oneTerm.term
+                substs1.tBindings[tVar] = oneTerm.term
 
-                if (intersect(elems1.drop(1), elems2.drop(oneTerm.length), substs))
+                if (intersect(elems1.drop(1), elems2.drop(oneTerm.length), substs1, substs2))
                     return true
 
-                substs.tBindings.remove(tVar)
+                substs1.tBindings.remove(tVar)
                 return false
             }
         }
 
         if (isTVar(head2)) {
             val tVar = head2 as PatternVariable
-            val oldBinding = substs.tBindings[tVar]
+            val oldBinding = substs2.tBindings[tVar]
             if (oldBinding != null) {
-                if (!prefixMatches(oldBinding, elems1, substs)) {
+                if (!prefixMatches(oldBinding, elems1, substs1, substs2)) {
                     return false
                 }
                 val k = oldBinding.size
-                return intersect(elems1.drop(k), elems2.drop(1), substs)
+                return intersect(elems1.drop(k), elems2.drop(1), substs1, substs2)
             } else {
                 for (k in 1..elems1.size) {
                     val segment = elems1.take(k)
-                    substs.tBindings[tVar] = segment
-                    if (intersect(elems1.drop(k), elems2.drop(1), substs)) {
+                    substs2.tBindings[tVar] = segment
+                    if (intersect(elems1.drop(k), elems2.drop(1), substs1, substs2)) {
                         return true
                     }
-                    substs.tBindings.remove(tVar)
+                    substs2.tBindings.remove(tVar)
                 }
                 return false
             }
@@ -143,7 +145,8 @@ class PatternIntersectionChecker {
     private fun matchOneElement(
         elem1: PatternElement,
         elem2: PatternElement,
-        substs: Substitution
+        substs1: Substitution,
+        substs2: Substitution
     ): Boolean {
         if (elem1 is PatternLiteral && elem2 is PatternLiteral) {
             return elem1.value == elem2.value
@@ -160,19 +163,19 @@ class PatternIntersectionChecker {
             return elem1 == elem2
 
         if (isSVar(elem1) && (elem2.javaClass in listOfSimpleTypes)) {
-            return unifySVarWithAtom(elem1 as PatternVariable, elem2, substs)
+            return unifySVarWithAtom(elem1 as PatternVariable, elem2, substs1)
         }
 
         if (isSVar(elem2) && (elem1.javaClass in listOfSimpleTypes)) {
-            return unifySVarWithAtom(elem2 as PatternVariable, elem1, substs)
+            return unifySVarWithAtom(elem2 as PatternVariable, elem1, substs2)
         }
 
         if (isSVar(elem1) && isSVar(elem2)) {
-            return unifyVarVar(elem1 as PatternVariable, elem2 as PatternVariable, substs, substs.sBindings)
+            return unifyVarVar(elem1 as PatternVariable, elem2 as PatternVariable, substs1, substs2, substs1.sBindings, substs2.sBindings)
         }
 
         if (elem1 is PatternParenStructure && elem2 is PatternParenStructure) {
-            return intersect(elem1.elements, elem2.elements, substs)
+            return intersect(elem1.elements, elem2.elements, substs1, substs2)
         }
 
         return false
@@ -181,27 +184,29 @@ class PatternIntersectionChecker {
     private fun unifyVarVar(
         v1: PatternVariable,
         v2: PatternVariable,
-        substs: Substitution,
-        map: MutableMap<PatternVariable, List<PatternElement>>
+        substs1: Substitution,
+        substs2: Substitution,
+        map1: MutableMap<PatternVariable, List<PatternElement>>,
+        map2: MutableMap<PatternVariable, List<PatternElement>>
     ): Boolean {
-        val old1 = map[v1]
-        val old2 = map[v2]
+        val old1 = map1[v1]
+        val old2 = map2[v2]
 
         if (old1 == null && old2 == null) {
-            map[v1] = listOf(v2)
-            map[v2] = listOf(v1)
+            map1[v1] = listOf(v2)
+            map2[v2] = listOf(v1)
             return true
         }
 
         if (old1 != null && old2 == null) {
             if (old1.size == 1 && old1[0] is PatternVariable) {
                 val subVar = old1[0] as PatternVariable
-                return unifyVarVar(subVar, v2, substs, map)
+                return unifyVarVar(subVar, v2, substs1, substs2, map1, map2)
             } else if (old1.size == 1) {
                 val single = old1[0]
-                val old2Binding = map[v2]
+                val old2Binding = map2[v2]
                 if (old2Binding == null) {
-                    map[v2] = listOf(single)
+                    map2[v2] = listOf(single)
                     return true
                 } else if (old2Binding.size == 1) {
                     val single2 = old2Binding[0]
@@ -216,12 +221,12 @@ class PatternIntersectionChecker {
         if (old1 == null && old2 != null) {
             if (old2.size == 1 && old2[0] is PatternVariable) {
                 val subVar = old2[0] as PatternVariable
-                return unifyVarVar(v1, subVar, substs, map)
+                return unifyVarVar(v1, subVar, substs1, substs2, map1, map2)
             } else if (old2.size == 1) {
                 val single2 = old2[0]
-                val old1Binding = map[v1]
+                val old1Binding = map1[v1]
                 if (old1Binding == null) {
-                    map[v1] = listOf(single2)
+                    map1[v1] = listOf(single2)
                     return true
                 } else if (old1Binding.size == 1) {
                     return singleEquivalentToAtom(old1Binding[0], single2)
@@ -235,12 +240,12 @@ class PatternIntersectionChecker {
         if (old1 != null && old2 != null) {
             if (old1.size == 1 && old1[0] is PatternVariable) {
                 val v1sub = old1[0] as PatternVariable
-                return unifyVarVar(v1sub, v2, substs, map)
+                return unifyVarVar(v1sub, v2, substs1, substs2, map1, map2)
             }
 
             if (old2.size == 1 && old2[0] is PatternVariable) {
                 val v2sub = old2[0] as PatternVariable
-                return unifyVarVar(v1, v2sub, substs, map)
+                return unifyVarVar(v1, v2sub, substs1, substs2, map1, map2)
             }
 
             if (old1.size == 1 && old2.size == 1) {
@@ -299,11 +304,12 @@ class PatternIntersectionChecker {
     private fun prefixMatches(
         segment: List<PatternElement>,
         elems: List<PatternElement>,
-        substs: Substitution
+        substs1: Substitution,
+        substs2: Substitution
     ): Boolean {
         if (segment.size > elems.size) return false
         for (i in segment.indices) {
-            if (!matchOneElement(segment[i], elems[i], substs)) {
+            if (!matchOneElement(segment[i], elems[i], substs1, substs2)) {
                 return false
             }
         }
@@ -312,11 +318,19 @@ class PatternIntersectionChecker {
 
     private fun takeOneTerm(elems: List<PatternElement>): OneTermResult? {
         if (elems.isEmpty()) return null
-        val first = elems[0]
-
-        return when (first) {
+        return when (val first = elems[0]) {
             is PatternLiteral, is PatternNumber -> {
                 OneTermResult(listOf(first), 1)
+            }
+            is PatternVariable -> {
+                if (first.type == "t")
+                    OneTermResult(listOf(first), 1)
+                else null
+            }
+            is PatternStringVal -> {
+                if (first.value.length == 1)
+                    OneTermResult(listOf(first), 1)
+                 null
             }
 
             is PatternParenStructure -> {

@@ -396,4 +396,161 @@ class PatternIntersectionCheckerTest {
         assertTrue(checker.hasIntersection(p1,p2))
     }
 
+    @Test
+    fun `complex example`() {
+        val p1 = patternOf(
+            PatternVariable("e", "x"),
+            PatternLiteral("a"),
+            PatternVariable("t", "y"),
+            PatternVariable("s", "z")
+        )
+        val p2 = patternOf(
+            PatternLiteral("b"),
+            PatternLiteral("a"),
+            PatternVariable("t", "w"),
+            PatternVariable("s", "z")
+        )
+        assertTrue(checker.hasIntersection(p1, p2))
+    }
+
+    @Test
+    fun `complex pattern with e and t bindings`() {
+        // Паттерн 1: [ "start", e.x, "mid", t.y, "end" ]
+        val p1 = patternOf(
+            PatternLiteral("start"),
+            PatternVariable("e", "x"),
+            PatternLiteral("mid"),
+            PatternVariable("t", "y"),
+            PatternLiteral("end")
+        )
+        // Паттерн 2: [ "start", "A", "B", "mid", "X", "end" ]
+        val p2 = patternOf(
+            PatternLiteral("start"),
+            PatternLiteral("A"),
+            PatternLiteral("B"),
+            PatternLiteral("mid"),
+            PatternLiteral("X"),
+            PatternLiteral("end")
+        )
+        assertTrue(checker.hasIntersection(p1, p2))
+    }
+
+
+    @Test
+    fun `example with ex, "a", ty, sz vs "b", "a", tw, sz`() {
+        val p1 = patternOf(
+            PatternVariable("e", "x"),
+            PatternLiteral("a"),
+            PatternVariable("t", "y"),
+            PatternVariable("s", "z")
+        )
+        val p2 = patternOf(
+            PatternLiteral("b"),
+            PatternLiteral("a"),
+            PatternVariable("e", "x"),
+            PatternVariable("t", "w"),
+            PatternVariable("s", "z")
+        )
+        // Ожидаем, что алгоритм найдёт пересечение,
+        // при котором:
+        // e.x будет сопоставлена с [PatternLiteral("b")]
+        // t.y будет унифицирована с t.w (или через binding t.y = [ ... ] и t.w = [ ... ])
+        // s.z унифицируются напрямую
+        assertTrue(checker.hasIntersection(p1, p2))
+    }
+
+    @Test
+    fun `super complex pattern intersection test`() {
+        // Паттерн 1:
+        // [ "A", e.x, "B", ( "C", t.y, e.z, ( "D", s.w ) ), "E", e.a ]
+        val p1 = patternOf(
+            PatternLiteral("A"),
+            PatternVariable("e", "x"),
+            PatternLiteral("B"),
+            PatternParenStructure(
+                listOf(
+                    PatternLiteral("C"),
+                    PatternVariable("t", "y"),
+                    PatternVariable("e", "z"),
+                    PatternParenStructure(
+                        listOf(
+                            PatternLiteral("D"),
+                            PatternVariable("s", "w")
+                        )
+                    )
+                )
+            ),
+            PatternLiteral("E"),
+            PatternVariable("e", "a")
+        )
+
+        // Паттерн 2:
+        // [ "A", "X", e.x, "B", ( "C", t.y, "Z", ( "D", s.w ) ), "E", e.a ]
+        // Здесь предполагается, что:
+        // - e.x из p1 унифицируется с литералом "X" из p2,
+        // - затем "B" совпадает,
+        // - внутри скобок "C" совпадает, t.y унифицируется (будет взята из p1, например),
+        // - e.z из p1 унифицируется с литералом "Z" из p2,
+        // - вложенные скобки: "D" совпадает, s.w унифицируется напрямую,
+        // - "E" совпадает, и e.a из обоих шаблонов объединяются.
+        val p2 = patternOf(
+            PatternLiteral("A"),
+            PatternLiteral("X"),  // Ожидается, что это задаст binding для e.x как [PatternLiteral("X")]
+            PatternVariable("e", "x"),
+            PatternLiteral("B"),
+            PatternParenStructure(
+                listOf(
+                    PatternLiteral("C"),
+                    PatternVariable("t", "y"),
+                    PatternLiteral("Z"),  // Ожидается, что e.z унифицируется с [PatternLiteral("Z")]
+                    PatternParenStructure(
+                        listOf(
+                            PatternLiteral("D"),
+                            PatternVariable("s", "w")
+                        )
+                    )
+                )
+            ),
+            PatternLiteral("E"),
+            PatternVariable("e", "a")
+        )
+
+        // Если алгоритм корректно вычисляет пересечение, то найдётся такая подстановка, при которой:
+        // - e.x будет связана с [PatternLiteral("X")]
+        // - e.z будет связана с [PatternLiteral("Z")]
+        // - t.y, s.w и e.a унифицируются напрямую (т.е. совпадут во входе)
+        assertTrue(checker.hasIntersection(p1, p2))
+    }
+
+    @Test
+    fun `t variable should match bracketed structure as a single term`() {
+        // Паттерн 1: [ "Start", t.X, "End" ]
+        // Здесь t.X должна сопоставиться с одним термином.
+        val p1 = patternOf(
+            PatternLiteral("Start"),
+            PatternVariable("t", "X"),
+            PatternLiteral("End")
+        )
+        // Паттерн 2: [ "Start", ( "A", "B", "C" ), "End" ]
+        // Здесь ( "A", "B", "C" ) представлена как скобочная структура, которая
+        // считается одним термином для t‑переменной.
+        val p2 = patternOf(
+            PatternLiteral("Start"),
+            PatternParenStructure(
+                listOf(
+                    PatternLiteral("A"),
+                    PatternLiteral("B"),
+                    PatternLiteral("C")
+                )
+            ),
+            PatternLiteral("End")
+        )
+        // Ожидается, что t.X из p1 будет установлен как binding, равный
+        // [ PatternParenStructure([ "A", "B", "C" ]) ], то есть t.X сопоставится
+        // с одним термом – скобочной структурой.
+        assertTrue(checker.hasIntersection(p1, p2))
+    }
+
+
+
 }

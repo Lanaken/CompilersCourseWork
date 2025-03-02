@@ -37,6 +37,7 @@ object RefalCodeGenerator {
 
                     builder.append("}\n\n")
                 }
+                else -> {}
             }
         }
 
