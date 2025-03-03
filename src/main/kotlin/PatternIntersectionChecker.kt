@@ -344,19 +344,25 @@ class PatternIntersectionChecker {
     }
 
     private fun isEVar(e: PatternElement): Boolean {
-        return e is PatternVariable && e.type == "e"
+        return e is PatternVariable && e.type in E_VARS
     }
 
     private fun isTVar(e: PatternElement): Boolean {
-        return e is PatternVariable && e.type == "t"
+        return e is PatternVariable && e.type in T_VARS
     }
 
     private fun isSVar(e: PatternElement): Boolean {
-        return e is PatternVariable && e.type == "s"
+        return e is PatternVariable && e.type in S_VARS
     }
 
     private data class OneTermResult(
         val term: List<PatternElement>,
         val length: Int
     )
+
+    companion object {
+        val E_VARS = listOf("e", "E_VAR")
+        val T_VARS = listOf("t", "T_VAR")
+        val S_VARS = listOf("s", "S_VAR")
+    }
 }
